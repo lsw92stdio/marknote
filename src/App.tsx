@@ -99,6 +99,8 @@ export default function App() {
   // Editor cursor position
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
   const [isSyncing, setIsSyncing] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   const editorRef = useRef<EditorRef>(null);
   const previewRef = useRef<PreviewRef>(null);
@@ -637,6 +639,10 @@ export default function App() {
               onInsert={(prefix, suffix, defaultText) =>
                 editorRef.current?.insertText(prefix, suffix, defaultText)
               }
+              onUndo={() => editorRef.current?.undo()}
+              onRedo={() => editorRef.current?.redo()}
+              canUndo={canUndo}
+              canRedo={canRedo}
             />
           )}
 
@@ -658,6 +664,11 @@ export default function App() {
                   isDark={isDark}
                   onCursorChange={(line, col) => setCursorPos({ line, col })}
                   onScroll={viewMode === 'split' ? handleEditorScroll : undefined}
+                  historyKey={activeFileId}
+                  onHistoryChange={(canUndoNow, canRedoNow) => {
+                    setCanUndo(canUndoNow);
+                    setCanRedo(canRedoNow);
+                  }}
                 />
               </div>
             )}

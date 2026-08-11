@@ -249,9 +249,23 @@ console.log(greeting);
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-900">
-                  <span className="font-medium">줄 바꿈 (Line Break)</span>
+                  <span className="font-medium">줄 바꿈 (같은 문단 내 강제 개행)</span>
                   <kbd className="px-2 py-1 rounded bg-white dark:bg-black border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
                     Shift + Enter
+                  </kbd>
+                </div>
+
+                <div className="flex items-center justify-between p-3">
+                  <span className="font-medium">실행 취소 (Undo)</span>
+                  <kbd className="px-2 py-1 rounded bg-slate-100 dark:bg-neutral-900 border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Ctrl + Z / Cmd + Z
+                  </kbd>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-900">
+                  <span className="font-medium">다시 실행 (Redo)</span>
+                  <kbd className="px-2 py-1 rounded bg-white dark:bg-black border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Ctrl + Shift + Z / Ctrl + Y
                   </kbd>
                 </div>
               </div>
