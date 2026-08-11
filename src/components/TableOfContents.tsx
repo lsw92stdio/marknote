@@ -2,25 +2,44 @@ import React, { useState } from 'react';
 import { ListTree, ChevronRight, ChevronDown } from 'lucide-react';
 import { extractTOC } from '../utils/fileUtils';
 
+export type TOCPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+
 interface TableOfContentsProps {
   content: string;
   isDark: boolean;
   accentColor?: string;
+  enabled?: boolean;
+  position?: TOCPosition;
 }
+
+const POSITION_CLASSES: Record<TOCPosition, string> = {
+  'bottom-right': 'bottom-10 right-6',
+  'bottom-left': 'bottom-10 left-6',
+  'top-right': 'top-4 right-6',
+  'top-left': 'top-4 left-6',
+};
 
 export const TableOfContents: React.FC<TableOfContentsProps> = ({
   content,
   isDark,
   accentColor = '#2563eb',
+  enabled = true,
+  position = 'bottom-right',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const items = extractTOC(content);
 
-  if (items.length === 0) return null;
+  if (!enabled || items.length === 0) return null;
+
+  const handleItemClick = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    const target = document.getElementById(id);
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div
-      className={`fixed bottom-10 right-6 z-30 transition-all ${
+      className={`fixed z-30 transition-all ${POSITION_CLASSES[position]} ${
         isOpen ? 'w-64 shadow-xl' : 'w-auto'
       }`}
     >
@@ -57,6 +76,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
               <a
                 key={idx}
                 href={`#${item.id}`}
+                onClick={(e) => handleItemClick(e, item.id)}
                 style={{ paddingLeft: `${(item.level - 1) * 0.75}rem` }}
                 className="block py-1 px-2 rounded hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors text-[11px] truncate text-slate-700 dark:text-neutral-300 hover:font-medium"
               >

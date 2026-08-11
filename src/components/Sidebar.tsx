@@ -473,22 +473,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             />
           </label>
 
-          {/* Google Drive Status Button */}
+          {/* Google Drive Access Button */}
           {onOpenDriveModal && (
             <button
               onClick={onOpenDriveModal}
-              className={`w-full flex items-center justify-between py-2 px-3 rounded-xl font-medium transition-colors ${
-                isDriveConnected
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                  : 'bg-slate-50 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border border-slate-200 dark:border-neutral-800 hover:bg-slate-100 dark:hover:bg-neutral-800'
-              }`}
+              className="w-full flex items-center justify-between py-2 px-3 rounded-xl font-medium transition-colors bg-slate-50 dark:bg-neutral-900 text-slate-700 dark:text-neutral-300 border border-slate-200 dark:border-neutral-800 hover:bg-slate-100 dark:hover:bg-neutral-800"
             >
               <div className="flex items-center gap-2">
-                <Cloud className={`w-4 h-4 ${isDriveConnected ? 'text-emerald-500' : ''}`} />
-                <span>{isDriveConnected ? 'Google Drive 연동됨' : 'Google Drive 클라우드'}</span>
+                <Cloud className="w-4 h-4" />
+                <span>Google Drive</span>
               </div>
               <span className="text-[11px] font-semibold underline">
-                {isDriveConnected ? '설정' : '연결'}
+                {isDriveConnected ? '관리' : '연결'}
               </span>
             </button>
           )}
@@ -747,13 +743,15 @@ const FileItem: React.FC<FileItemProps> = ({
 
   return (
     <div
-      draggable
+      draggable={!isEditing}
       onDragStart={(e) => {
         e.dataTransfer.setData('text/plain', file.id);
         e.dataTransfer.effectAllowed = 'move';
       }}
       onClick={onSelect}
-      className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-grab active:cursor-grabbing transition-colors ${
+      className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+        isEditing ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
+      } ${
         isActive
           ? 'font-medium shadow-xs'
           : 'hover:bg-slate-200/70 dark:hover:bg-neutral-800/80 text-slate-700 dark:text-neutral-300'
@@ -784,7 +782,7 @@ const FileItem: React.FC<FileItemProps> = ({
         )}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="relative z-10 flex items-center gap-1 shrink-0">
         {/* Sync Status */}
         <span className="shrink-0">{syncIcon}</span>
 
@@ -809,9 +807,9 @@ const FileItem: React.FC<FileItemProps> = ({
         </button>
       </div>
 
-      {/* Hover Action Overlay — blurs the tail of the name and floats action icons on top, without reserving layout space */}
+      {/* Hover Action Overlay — blurs the tail of the name and floats action icons on top, without reserving layout space. Stops short of the sync/favorite icons (which stack above via z-10) so they stay reachable. */}
       <div
-        className={`absolute inset-y-0 right-0 flex items-center gap-0.5 pl-4 pr-1 rounded-r-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity backdrop-blur-[3px] ${
+        className={`absolute inset-y-0 right-11 flex items-center gap-0.5 pl-4 pr-1 rounded-l-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity backdrop-blur-[3px] ${
           isActive ? 'bg-black/15' : 'bg-white/60 dark:bg-black/50'
         }`}
       >

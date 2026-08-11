@@ -240,8 +240,12 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in"
+      >
         <div
+          onClick={(e) => e.stopPropagation()}
           className={`w-full max-w-lg rounded-2xl shadow-2xl border overflow-hidden flex flex-col max-h-[85vh] ${
             isDark
               ? 'bg-neutral-950 border-neutral-800 text-neutral-100'
@@ -391,7 +395,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 {/* Google Drive Folder Files */}
                 <div className="space-y-2 pt-2">
                   <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-xs">
-                    Google Drive "MarkdownEditor_Files" 폴더 목록 ({driveFileList.length}개)
+                    Google Drive "MarkNote_Files" 폴더 목록 ({driveFileList.length}개)
                   </h4>
 
                   <div className="max-h-48 overflow-y-auto space-y-1.5 rounded-xl border border-slate-200 dark:border-neutral-800 p-2 bg-slate-50/50 dark:bg-neutral-900/50">

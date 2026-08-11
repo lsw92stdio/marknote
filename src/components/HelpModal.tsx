@@ -12,6 +12,9 @@ import {
   Quote,
   Code2,
   Table,
+  Link2,
+  ListTree,
+  Settings,
 } from 'lucide-react';
 
 interface HelpModalProps {
@@ -270,7 +273,7 @@ console.log(greeting);
                     <span>Google Drive 클라우드 연동</span>
                   </div>
                   <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-relaxed">
-                    Google 계정으로 연결하면 작성 중인 문서들이 내 드라이브로 동기화되어 어느 기기에서나 안전하게 이어쓸 수 있습니다.
+                    별도 설정 없이 사이드바의 'Google Drive' 버튼만 누르면 각자 자기 계정으로 로그인해 자기 드라이브에 저장됩니다. 폴더 구성과 즐겨찾기 상태까지 함께 동기화되어 다른 기기에서도 그대로 이어집니다.
                   </p>
                 </div>
 
@@ -286,11 +289,31 @@ console.log(greeting);
 
                 <div className="p-3.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/50 space-y-1">
                   <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
-                    <FileText className="w-4 h-4 text-amber-500" />
-                    <span>자동 목차(TOC) 기능</span>
+                    <ListTree className="w-4 h-4 text-amber-500" />
+                    <span>클릭 이동 목차(TOC)</span>
                   </div>
                   <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-relaxed">
-                    문서 내 H1~H6 제목 태그를 자동으로 수집하여 우측 하단에 인터랙티브 목차를 제공합니다.
+                    문서 내 #, ##, ### 제목을 자동 수집해 목차 위젯으로 보여주고, 항목을 클릭하면 해당 위치로 바로 이동합니다. 설정에서 켜기/끄기와 화면 위치(4모서리)를 바꿀 수 있습니다.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/50 space-y-1">
+                  <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
+                    <Link2 className="w-4 h-4 text-sky-500" />
+                    <span>나눠보기 스크롤 동기화</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-relaxed">
+                    분할 화면 모드에서 에디터와 미리보기 스크롤이 함께 움직입니다. 설정에서 언제든 끄고 켤 수 있습니다.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/50 space-y-1">
+                  <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
+                    <Settings className="w-4 h-4 text-slate-500" />
+                    <span>설정 패널</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-relaxed">
+                    상단 '설정' 버튼에서 Google Drive 연결 상태 확인, 스크롤 동기화, 목차 켜기/끄기 및 위치를 한곳에서 관리할 수 있습니다.
                   </p>
                 </div>
               </div>

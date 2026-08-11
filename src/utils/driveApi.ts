@@ -18,7 +18,8 @@ declare global {
   }
 }
 
-const DEFAULT_DRIVE_FOLDER_NAME = 'MarkdownEditor_Files';
+const DEFAULT_DRIVE_FOLDER_NAME = 'MarkNote_Files';
+const META_FILE_NAME = '.marknote_meta.json';
 
 export function loadGsiScript(): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -93,7 +94,7 @@ export async function fetchUserProfile(accessToken: string) {
   return await res.json();
 }
 
-// Find or Create 'MarkdownEditor_Files' folder in Google Drive
+// Find or Create 'MarkNote_Files' folder in Google Drive
 export async function getOrCreateDriveFolder(accessToken: string): Promise<string> {
   // Query existing folder
   const query = encodeURIComponent(`name = '${DEFAULT_DRIVE_FOLDER_NAME}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`);
@@ -136,7 +137,9 @@ export interface DriveFileInfo {
 }
 
 export async function listDriveFiles(accessToken: string, folderId: string): Promise<DriveFileInfo[]> {
-  const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
+  const query = encodeURIComponent(
+    `'${folderId}' in parents and trashed = false and name != '${META_FILE_NAME}'`
+  );
   const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name,modifiedTime)`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
@@ -221,4 +224,81 @@ export async function deleteDriveFile(accessToken: string, fileId: string): Prom
   if (!res.ok) {
     throw new Error('드라이브 파일 삭제에 실패했습니다.');
   }
+}
+
+// --- Cross-device folder/favorite metadata sync ---
+// A small hidden JSON file (.marknote_meta.json) stored alongside the .md files
+// carries folder structure and favorite flags, keyed by each file's stable Drive id.
+
+export interface DriveMeta {
+  folders: { id: string; name: string; parentId: string | null; createdAt: number }[];
+  fileMeta: Record<string, { folderId: string | null; isFavorite: boolean }>;
+}
+
+export async function findMetaFileId(accessToken: string, folderId: string): Promise<string | null> {
+  const query = encodeURIComponent(`'${folderId}' in parents and trashed = false and name = '${META_FILE_NAME}'`);
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id)`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.files?.[0]?.id || null;
+}
+
+export async function loadMetaFromDrive(accessToken: string, folderId: string): Promise<DriveMeta | null> {
+  const metaFileId = await findMetaFileId(accessToken, folderId);
+  if (!metaFileId) return null;
+
+  try {
+    const raw = await downloadDriveFileContent(accessToken, metaFileId);
+    return JSON.parse(raw) as DriveMeta;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveMetaToDrive(
+  accessToken: string,
+  folderId: string,
+  meta: DriveMeta,
+  existingMetaFileId?: string | null
+): Promise<{ id: string }> {
+  const boundary = 'foo_bar_baz';
+  const delimiter = `\r\n--${boundary}\r\n`;
+  const closeDelimiter = `\r\n--${boundary}--`;
+
+  const metadata = {
+    name: META_FILE_NAME,
+    mimeType: 'application/json',
+    parents: existingMetaFileId ? undefined : [folderId],
+  };
+
+  const multipartRequestBody =
+    delimiter +
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+    JSON.stringify(metadata) +
+    delimiter +
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+    JSON.stringify(meta) +
+    closeDelimiter;
+
+  const url = existingMetaFileId
+    ? `https://www.googleapis.com/upload/drive/v3/files/${existingMetaFileId}?uploadType=multipart&fields=id`
+    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id';
+
+  const res = await fetch(url, {
+    method: existingMetaFileId ? 'PATCH' : 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': `multipart/related; boundary=${boundary}`,
+    },
+    body: multipartRequestBody,
+  });
+
+  if (!res.ok) {
+    throw new Error('메타데이터 저장에 실패했습니다.');
+  }
+
+  return await res.json();
 }

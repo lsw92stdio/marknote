@@ -8,12 +8,10 @@ import {
   Square,
   Palette,
   Download,
-  Cloud,
   Menu,
   FileText,
   HelpCircle,
-  Link2,
-  Link2Off,
+  Settings,
 } from 'lucide-react';
 import { ViewMode, AppTheme } from '../types';
 import { getContrastingTextColor } from '../utils/colorUtils';
@@ -28,15 +26,11 @@ interface HeaderProps {
   onToggleTheme: () => void;
   onOpenStyleCustomizer: () => void;
   onOpenExportModal: () => void;
-  onOpenDriveModal?: () => void;
   onOpenHelpModal?: () => void;
+  onOpenSettings: () => void;
   onToggleSidebar: () => void;
-  isDriveConnected?: boolean;
-  isSyncing?: boolean;
   isDark: boolean;
   accentColor?: string;
-  scrollSyncEnabled?: boolean;
-  onToggleScrollSync?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,15 +42,11 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   onOpenStyleCustomizer,
   onOpenExportModal,
-  onOpenDriveModal,
   onOpenHelpModal,
+  onOpenSettings,
   onToggleSidebar,
-  isDriveConnected,
-  isSyncing,
   isDark,
   accentColor = '#2563eb',
-  scrollSyncEnabled = true,
-  onToggleScrollSync,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(getDisplayName(fileName));
@@ -187,28 +177,8 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* Right: Actions (Style Customizer, Export, Google Drive, Dark mode) */}
+      {/* Right: Actions (Style Customizer, Export, Settings, Dark mode) */}
       <div className="flex items-center gap-2">
-        {/* Scroll Sync Toggle (Split view only) */}
-        {viewMode === 'split' && onToggleScrollSync && (
-          <button
-            onClick={onToggleScrollSync}
-            className={`hidden md:flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg text-xs font-semibold transition-colors border shadow-xs ${
-              scrollSyncEnabled
-                ? 'bg-slate-50 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800'
-                : 'bg-slate-100 dark:bg-neutral-800 border-slate-300 dark:border-neutral-700 text-slate-400 dark:text-neutral-500'
-            }`}
-            title={scrollSyncEnabled ? '스크롤 동기화 켜짐 (클릭하여 끄기)' : '스크롤 동기화 꺼짐 (클릭하여 켜기)'}
-          >
-            {scrollSyncEnabled ? (
-              <Link2 className="w-3.5 h-3.5" style={{ color: accentColor }} />
-            ) : (
-              <Link2Off className="w-3.5 h-3.5" />
-            )}
-            <span className="hidden lg:inline">스크롤 동기화</span>
-          </button>
-        )}
-
         {/* Style Customizer */}
         <button
           onClick={onOpenStyleCustomizer}
@@ -219,20 +189,14 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">스타일 커스텀</span>
         </button>
 
-        {/* Google Drive Sync */}
+        {/* Settings */}
         <button
-          onClick={onOpenDriveModal}
-          className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg text-xs font-semibold transition-colors border shadow-xs ${
-            isDriveConnected
-              ? 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
-              : 'bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-200'
-          }`}
-          title="Google Drive 클라우드 동기화 및 백업"
+          onClick={onOpenSettings}
+          className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs"
+          title="설정"
         >
-          <Cloud className={`w-3.5 h-3.5 ${isSyncing ? 'animate-bounce text-amber-500' : isDriveConnected ? 'text-emerald-500' : ''}`} />
-          <span className="hidden lg:inline">
-            {isSyncing ? '동기화 중...' : isDriveConnected ? 'Drive 연결됨' : 'Drive 동기화'}
-          </span>
+          <Settings className="w-3.5 h-3.5" style={{ color: accentColor }} />
+          <span className="hidden sm:inline">설정</span>
         </button>
 
         {/* Export Button - Bound to Accent Color */}

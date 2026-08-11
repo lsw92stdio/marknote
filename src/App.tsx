@@ -11,8 +11,17 @@ import { ExportModal } from './components/ExportModal';
 import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { HelpModal } from './components/HelpModal';
 import { StatsBar } from './components/StatsBar';
-import { TableOfContents } from './components/TableOfContents';
-import { saveFileToDrive, getOrCreateDriveFolder, deleteDriveFile } from './utils/driveApi';
+import { TableOfContents, TOCPosition } from './components/TableOfContents';
+import { SettingsModal } from './components/SettingsModal';
+import {
+  saveFileToDrive,
+  getOrCreateDriveFolder,
+  deleteDriveFile,
+  findMetaFileId,
+  saveMetaToDrive,
+  downloadDriveFileContent,
+  DriveMeta,
+} from './utils/driveApi';
 import { getEffectiveAccentColor } from './utils/colorUtils';
 
 const DEFAULT_STYLE_CONFIG: PreviewStyleConfig = {
@@ -70,11 +79,21 @@ export default function App() {
     return saved === null ? true : saved === 'true';
   });
 
+  const [tocEnabled, setTocEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('md_editor_toc_enabled');
+    return saved === null ? true : saved === 'true';
+  });
+
+  const [tocPosition, setTocPosition] = useState<TOCPosition>(() => {
+    return (localStorage.getItem('md_editor_toc_position') as TOCPosition) || 'bottom-right';
+  });
+
   // UI Modals
   const [isStyleCustomizerOpen, setIsStyleCustomizerOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Editor cursor position
@@ -84,6 +103,7 @@ export default function App() {
   const editorRef = useRef<EditorRef>(null);
   const previewRef = useRef<PreviewRef>(null);
   const isSyncingScrollRef = useRef(false);
+  const metaFileIdRef = useRef<string | null>(null);
 
   const isDark = theme === 'dark';
 
@@ -137,6 +157,15 @@ export default function App() {
     localStorage.setItem('md_editor_scroll_sync', String(scrollSyncEnabled));
   }, [scrollSyncEnabled]);
 
+  // Persist TOC settings
+  useEffect(() => {
+    localStorage.setItem('md_editor_toc_enabled', String(tocEnabled));
+  }, [tocEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('md_editor_toc_position', tocPosition);
+  }, [tocPosition]);
+
   // Split-view Scroll Sync Handlers
   const handleEditorScroll = (ratio: number) => {
     if (!scrollSyncEnabled || isSyncingScrollRef.current) return;
@@ -155,6 +184,87 @@ export default function App() {
       isSyncingScrollRef.current = false;
     });
   };
+
+  // Load & Merge Folder/Favorite Metadata on Drive Connect
+  useEffect(() => {
+    const accessToken = userProfile?.accessToken;
+    if (!accessToken) {
+      metaFileIdRef.current = null;
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const driveFolderId = await getOrCreateDriveFolder(accessToken);
+        const foundMetaId = await findMetaFileId(accessToken, driveFolderId);
+        if (cancelled) return;
+        metaFileIdRef.current = foundMetaId;
+        if (!foundMetaId) return;
+
+        const raw = await downloadDriveFileContent(accessToken, foundMetaId);
+        if (cancelled) return;
+        const meta = JSON.parse(raw) as DriveMeta;
+
+        setFolders((prev) => {
+          const existingIds = new Set(prev.map((f) => f.id));
+          const merged = [...prev];
+          meta.folders?.forEach((rf) => {
+            if (!existingIds.has(rf.id)) merged.push(rf);
+          });
+          return merged;
+        });
+
+        setFiles((prev) =>
+          prev.map((f) => {
+            if (!f.driveFileId) return f;
+            const remoteMeta = meta.fileMeta?.[f.driveFileId];
+            if (!remoteMeta) return f;
+            return { ...f, folderId: remoteMeta.folderId, isFavorite: remoteMeta.isFavorite };
+          })
+        );
+      } catch (err) {
+        console.error('Meta load error:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userProfile?.accessToken]);
+
+  // Debounced Metadata Upload (folder structure + favorites) — keyed off structural changes only, not content
+  const fileMetaFingerprint = files
+    .map((f) => `${f.driveFileId || ''}:${f.folderId || ''}:${f.isFavorite ? 1 : 0}`)
+    .join(',');
+
+  useEffect(() => {
+    if (!autoSyncEnabled || !userProfile?.accessToken) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const accessToken = userProfile.accessToken!;
+        const driveFolderId = await getOrCreateDriveFolder(accessToken);
+        const fileMeta: DriveMeta['fileMeta'] = {};
+        files.forEach((f) => {
+          if (f.driveFileId) {
+            fileMeta[f.driveFileId] = { folderId: f.folderId, isFavorite: !!f.isFavorite };
+          }
+        });
+        const result = await saveMetaToDrive(
+          accessToken,
+          driveFolderId,
+          { folders, fileMeta },
+          metaFileIdRef.current
+        );
+        metaFileIdRef.current = result.id;
+      } catch (err) {
+        console.error('Meta sync error:', err);
+      }
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [folders, fileMetaFingerprint, autoSyncEnabled, userProfile?.accessToken]);
 
   // Active File Reference
   const activeFile = files.find((f) => f.id === activeFileId) || files[0];
@@ -460,15 +570,11 @@ export default function App() {
           onToggleTheme={handleToggleTheme}
           onOpenStyleCustomizer={() => setIsStyleCustomizerOpen(true)}
           onOpenExportModal={() => setIsExportModalOpen(true)}
-          onOpenDriveModal={() => setIsDriveModalOpen(true)}
           onOpenHelpModal={() => setIsHelpModalOpen(true)}
+          onOpenSettings={() => setIsSettingsModalOpen(true)}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          isDriveConnected={!!userProfile}
-          isSyncing={isSyncing}
           isDark={isDark}
           accentColor={effectiveAccentColor}
-          scrollSyncEnabled={scrollSyncEnabled}
-          onToggleScrollSync={() => setScrollSyncEnabled((prev) => !prev)}
         />
 
         {/* Editor & Preview Panes Layout */}
@@ -524,6 +630,8 @@ export default function App() {
                   content={activeFile?.content || ''}
                   isDark={isDark}
                   accentColor={effectiveAccentColor}
+                  enabled={tocEnabled}
+                  position={tocPosition}
                 />
               </div>
             )}
@@ -576,6 +684,22 @@ export default function App() {
         onClose={() => setIsHelpModalOpen(false)}
         isDark={isDark}
         accentColor={effectiveAccentColor}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        isDark={isDark}
+        accentColor={effectiveAccentColor}
+        scrollSyncEnabled={scrollSyncEnabled}
+        onToggleScrollSync={setScrollSyncEnabled}
+        tocEnabled={tocEnabled}
+        onToggleToc={setTocEnabled}
+        tocPosition={tocPosition}
+        onChangeTocPosition={setTocPosition}
+        userProfile={userProfile}
+        onOpenDriveModal={() => setIsDriveModalOpen(true)}
       />
 
       {/* Google Drive Sync Modal */}

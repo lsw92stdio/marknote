@@ -304,16 +304,28 @@ export function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
+export function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\u3131-\u318E\uAC00-\uD7A3]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export function extractTOC(markdown: string): TOCItem[] {
   const lines = markdown.split('\n');
   const items: TOCItem[] = [];
+  const usedIds = new Map<string, number>();
 
   lines.forEach((line) => {
     const match = line.match(/^(#{1,3})\s+(.+)$/);
     if (match) {
       const level = match[1].length;
       const text = match[2].trim().replace(/[*_~`]/g, '');
-      const id = text.toLowerCase().replace(/[^\w\u3131-\u318E\uAC00-\uD7A3]+/g, '-');
+      let id = slugifyHeading(text);
+      const count = usedIds.get(id) ?? 0;
+      usedIds.set(id, count + 1);
+      if (count > 0) id = `${id}-${count}`;
       items.push({ id, text, level });
     }
   });

@@ -7,6 +7,16 @@ import rehypeKatex from 'rehype-katex';
 import { Copy, Check } from 'lucide-react';
 import { PreviewStyleConfig } from '../types';
 import { getEffectiveAccentColor, getTintedBackground } from '../utils/colorUtils';
+import { slugifyHeading } from '../utils/fileUtils';
+
+// Recursively extracts plain text from a React node tree (used for code copy & heading anchors)
+function extractPlainText(child: any): string {
+  if (typeof child === 'string') return child;
+  if (typeof child === 'number') return String(child);
+  if (Array.isArray(child)) return child.map(extractPlainText).join('');
+  if (child && child.props && child.props.children) return extractPlainText(child.props.children);
+  return '';
+}
 
 export interface PreviewRef {
   scrollToRatio: (ratio: number) => void;
@@ -44,6 +54,17 @@ export const Preview = forwardRef<PreviewRef, PreviewProps>(
     navigator.clipboard.writeText(codeText);
     setCopiedCodeId(id);
     setTimeout(() => setCopiedCodeId(null), 2000);
+  };
+
+  // Heading anchor id generation — recomputed each render, matching extractTOC's slug + dedupe logic
+  const headingSlugCounts = new Map<string, number>();
+  const getHeadingId = (children: any): string => {
+    const text = extractPlainText(children);
+    let id = slugifyHeading(text);
+    const count = headingSlugCounts.get(id) ?? 0;
+    headingSlugCounts.set(id, count + 1);
+    if (count > 0) id = `${id}-${count}`;
+    return id;
   };
 
   // Font family class mapping
@@ -128,9 +149,11 @@ export const Preview = forwardRef<PreviewRef, PreviewProps>(
             // Headings with optional accent color
             h1: ({ children }) => (
               <h1
+                id={getHeadingId(children)}
                 style={{
                   color: styleConfig.accentHeadings ?? true ? effectiveAccentColor : 'var(--preview-heading-color)',
                   borderBottomColor: styleConfig.accentHeadings ?? true ? `${effectiveAccentColor}40` : undefined,
+                  scrollMarginTop: '1.5rem',
                 }}
                 className="text-2xl md:text-3xl font-extrabold pb-2 mb-4 border-b border-slate-200 dark:border-neutral-800 tracking-tight"
               >
@@ -139,9 +162,11 @@ export const Preview = forwardRef<PreviewRef, PreviewProps>(
             ),
             h2: ({ children }) => (
               <h2
+                id={getHeadingId(children)}
                 style={{
                   color: styleConfig.accentHeadings ?? true ? effectiveAccentColor : 'var(--preview-heading-color)',
                   borderBottomColor: styleConfig.accentHeadings ?? true ? `${effectiveAccentColor}25` : undefined,
+                  scrollMarginTop: '1.5rem',
                 }}
                 className="text-xl md:text-2xl font-bold pb-1.5 mb-3 border-b border-slate-100 dark:border-neutral-800/80 mt-6 tracking-tight"
               >
@@ -150,8 +175,10 @@ export const Preview = forwardRef<PreviewRef, PreviewProps>(
             ),
             h3: ({ children }) => (
               <h3
+                id={getHeadingId(children)}
                 style={{
                   color: styleConfig.accentHeadings ?? true ? effectiveAccentColor : 'var(--preview-heading-color)',
+                  scrollMarginTop: '1.5rem',
                 }}
                 className="text-lg md:text-xl font-bold mt-5 mb-2"
               >
@@ -167,17 +194,8 @@ export const Preview = forwardRef<PreviewRef, PreviewProps>(
               const lang = match ? match[1] : '';
               const codeId = `code-${Math.random().toString(36).substring(2, 9)}`;
 
-              // Helper function to extract plain text string from React node tree for copying
-              const extractText = (child: any): string => {
-                if (typeof child === 'string') return child;
-                if (typeof child === 'number') return String(child);
-                if (Array.isArray(child)) return child.map(extractText).join('');
-                if (child && child.props && child.props.children) return extractText(child.props.children);
-                return '';
-              };
-
               if (!inline) {
-                const codeString = extractText(children).replace(/\n$/, '');
+                const codeString = extractPlainText(children).replace(/\n$/, '');
 
                 return (
                   <div className="relative group my-4 rounded-xl overflow-hidden border border-slate-200 dark:border-neutral-800 shadow-xs">
