@@ -98,7 +98,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <div className="p-3.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/40 space-y-2.5">
             <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
               <Link2 className="w-4 h-4" style={{ color: accentColor }} />
-              <span>나눠보기 스크롤 동기화</span>
+              <span>같이보기 스크롤 동기화</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-600 dark:text-neutral-300">
@@ -108,7 +108,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 checked={scrollSyncEnabled}
                 onChange={onToggleScrollSync}
                 accentColor={accentColor}
-                ariaLabel="나눠보기 스크롤 동기화"
+                ariaLabel="같이보기 스크롤 동기화"
               />
             </div>
           </div>

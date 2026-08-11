@@ -104,6 +104,10 @@ export default function App() {
   const previewRef = useRef<PreviewRef>(null);
   const isSyncingScrollRef = useRef(false);
   const metaFileIdRef = useRef<string | null>(null);
+  const filesRef = useRef(files);
+  const userProfileRef = useRef(userProfile);
+  const autoSyncEnabledRef = useRef(autoSyncEnabled);
+  const retryCountRef = useRef<Record<string, number>>({});
 
   const isDark = theme === 'dark';
 
@@ -278,46 +282,78 @@ export default function App() {
   // Active File Reference
   const activeFile = files.find((f) => f.id === activeFileId) || files[0];
 
+  // Keep refs current so async callbacks (retry timers) always see fresh values
+  useEffect(() => {
+    filesRef.current = files;
+  }, [files]);
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  }, [userProfile]);
+  useEffect(() => {
+    autoSyncEnabledRef.current = autoSyncEnabled;
+  }, [autoSyncEnabled]);
+
+  const MAX_AUTO_RETRIES = 2;
+
+  // Syncs a single file to Drive by id. Reused by the debounced auto-sync,
+  // automatic retry-on-failure, and the manual "재시도" action in the status bar.
+  const syncFileToDrive = async (fileId: string) => {
+    const accessToken = userProfileRef.current?.accessToken;
+    if (!accessToken) return;
+    const file = filesRef.current.find((f) => f.id === fileId);
+    if (!file) return;
+
+    setIsSyncing(true);
+    setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, syncStatus: 'syncing' } : f)));
+
+    try {
+      const folderId = await getOrCreateDriveFolder(accessToken);
+      const res = await saveFileToDrive(accessToken, folderId, file.name, file.content, file.driveFileId);
+
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.id === fileId
+            ? { ...f, driveFileId: res.id, lastSyncedAt: Date.now(), syncStatus: 'synced' }
+            : f
+        )
+      );
+      retryCountRef.current[fileId] = 0;
+    } catch (err) {
+      console.error('Drive sync error:', err);
+      setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, syncStatus: 'error' } : f)));
+
+      const attempt = (retryCountRef.current[fileId] || 0) + 1;
+      retryCountRef.current[fileId] = attempt;
+      if (attempt <= MAX_AUTO_RETRIES) {
+        const delay = attempt * 5000; // 5s, then 10s backoff
+        setTimeout(() => {
+          const latest = filesRef.current.find((f) => f.id === fileId);
+          if (
+            autoSyncEnabledRef.current &&
+            userProfileRef.current?.accessToken &&
+            latest?.syncStatus === 'error'
+          ) {
+            syncFileToDrive(fileId);
+          }
+        }, delay);
+      }
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleRetrySync = () => {
+    if (!activeFile) return;
+    retryCountRef.current[activeFile.id] = 0;
+    syncFileToDrive(activeFile.id);
+  };
+
   // Auto-Sync Debounce to Google Drive
   useEffect(() => {
     if (!autoSyncEnabled || !userProfile?.accessToken || !activeFile) return;
 
-    const timer = setTimeout(async () => {
-      setIsSyncing(true);
-      setFiles((prev) =>
-        prev.map((f) => (f.id === activeFile.id ? { ...f, syncStatus: 'syncing' } : f))
-      );
-
-      try {
-        const folderId = await getOrCreateDriveFolder(userProfile.accessToken!);
-        const res = await saveFileToDrive(
-          userProfile.accessToken!,
-          folderId,
-          activeFile.name,
-          activeFile.content,
-          activeFile.driveFileId
-        );
-
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === activeFile.id
-              ? {
-                  ...f,
-                  driveFileId: res.id,
-                  lastSyncedAt: Date.now(),
-                  syncStatus: 'synced',
-                }
-              : f
-          )
-        );
-      } catch (err) {
-        console.error('Auto sync error:', err);
-        setFiles((prev) =>
-          prev.map((f) => (f.id === activeFile.id ? { ...f, syncStatus: 'error' } : f))
-        );
-      } finally {
-        setIsSyncing(false);
-      }
+    const timer = setTimeout(() => {
+      syncFileToDrive(activeFile.id);
     }, 1500); // Debounce — short enough that the status bar reflects changes promptly
 
     return () => clearTimeout(timer);
@@ -671,6 +707,7 @@ export default function App() {
           cursorLine={cursorPos.line}
           cursorCol={cursorPos.col}
           syncStatus={activeFile?.syncStatus}
+          onRetrySync={handleRetrySync}
           isDark={isDark}
         />
       </div>

@@ -7,6 +7,7 @@ interface StatsBarProps {
   cursorLine: number;
   cursorCol: number;
   syncStatus?: string;
+  onRetrySync?: () => void;
   isDark: boolean;
 }
 
@@ -15,6 +16,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({
   cursorLine,
   cursorCol,
   syncStatus,
+  onRetrySync,
   isDark,
 }) => {
   const stats = calculateTextStats(content);
@@ -65,10 +67,14 @@ export const StatsBar: React.FC<StatsBarProps> = ({
             <span className="hidden sm:inline">Drive 동기화됨</span>
           </span>
         ) : syncStatus === 'error' ? (
-          <span className="flex items-center gap-1 text-red-500 font-medium" title="문서를 수정하면 자동으로 다시 시도합니다">
+          <button
+            onClick={onRetrySync}
+            className="flex items-center gap-1 text-red-500 hover:text-red-400 font-medium cursor-pointer"
+            title="클릭하여 다시 시도 (자동으로도 잠시 후 재시도합니다)"
+          >
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">동기화 실패</span>
-          </span>
+            <span className="hidden sm:inline">동기화 실패 · 재시도</span>
+          </button>
         ) : syncStatus === 'modified' ? (
           <span className="flex items-center gap-1 text-amber-500 font-medium">
             <CloudUpload className="w-3.5 h-3.5" />

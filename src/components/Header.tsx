@@ -113,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={viewMode === 'split' ? { color: accentColor } : {}}
         >
           <Columns className="w-3.5 h-3.5" />
-          <span>나눠보기 (Split)</span>
+          <span>같이보기</span>
         </button>
 
         <button
@@ -126,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={viewMode === 'editor' ? { color: accentColor } : {}}
         >
           <Code2 className="w-3.5 h-3.5" />
-          <span>에디터만</span>
+          <span>에디터</span>
         </button>
 
         <button
@@ -139,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={viewMode === 'preview' ? { color: accentColor } : {}}
         >
           <Eye className="w-3.5 h-3.5" />
-          <span>결과물만</span>
+          <span>미리보기</span>
         </button>
       </div>
 
@@ -151,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
             viewMode === 'editor' ? 'bg-white dark:bg-neutral-800 shadow-xs' : 'text-slate-500 dark:text-neutral-400'
           }`}
           style={viewMode === 'editor' ? { color: accentColor } : {}}
-          title="에디터만 보기"
+          title="에디터"
         >
           <Code2 className="w-4 h-4" />
         </button>
@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
             viewMode === 'split' ? 'bg-white dark:bg-neutral-800 shadow-xs' : 'text-slate-500 dark:text-neutral-400'
           }`}
           style={viewMode === 'split' ? { color: accentColor } : {}}
-          title="나눠보기"
+          title="같이보기"
         >
           <Columns className="w-4 h-4" />
         </button>
@@ -171,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({
             viewMode === 'preview' ? 'bg-white dark:bg-neutral-800 shadow-xs' : 'text-slate-500 dark:text-neutral-400'
           }`}
           style={viewMode === 'preview' ? { color: accentColor } : {}}
-          title="미리보기만 보기"
+          title="미리보기"
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -179,6 +179,8 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: Actions (Style Customizer, Export, Settings, Dark mode) */}
       <div className="flex items-center gap-2 shrink-0">
+        <div className="w-px h-4 bg-slate-200 dark:bg-neutral-800 mx-0.5" />
+
         {/* Style Customizer */}
         <button
           onClick={onOpenStyleCustomizer}

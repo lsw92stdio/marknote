@@ -304,10 +304,10 @@ console.log(greeting);
                 <div className="p-3.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50/50 dark:bg-neutral-900/50 space-y-1">
                   <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
                     <Link2 className="w-4 h-4 text-sky-500" />
-                    <span>나눠보기 스크롤 동기화</span>
+                    <span>같이보기 스크롤 동기화</span>
                   </div>
                   <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-relaxed">
-                    분할 화면 모드에서 에디터와 미리보기 스크롤이 함께 움직입니다. 설정에서 언제든 끄고 켤 수 있습니다.
+                    같이보기 모드에서 에디터와 미리보기 스크롤이 함께 움직입니다. 설정에서 언제든 끄고 켤 수 있습니다.
                   </p>
                 </div>
 
