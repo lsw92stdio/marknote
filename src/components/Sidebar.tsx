@@ -231,7 +231,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Sidebar Header - MarkNote Branding */}
-        <div className="p-4 border-b border-slate-200 dark:border-neutral-800 flex items-center justify-between">
+        <div className="h-14 px-4 shrink-0 border-b border-slate-200 dark:border-neutral-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5 min-w-0">
             <MarkNoteLogo accentColor={accentColor} size="md" />
             <div className="flex flex-col min-w-0">

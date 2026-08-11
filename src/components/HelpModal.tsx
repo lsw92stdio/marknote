@@ -35,8 +35,12 @@ export const HelpModal: React.FC<HelpModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
+    >
       <div
+        onClick={(e) => e.stopPropagation()}
         className={`w-full max-w-2xl rounded-2xl shadow-2xl border overflow-hidden flex flex-col max-h-[85vh] ${
           isDark
             ? 'bg-neutral-950 border-neutral-800 text-neutral-100'

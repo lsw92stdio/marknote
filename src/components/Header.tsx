@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="h-14 px-4 flex items-center justify-between border-b border-slate-200 dark:border-neutral-800 bg-white dark:bg-black text-slate-800 dark:text-neutral-100 select-none z-30 transition-colors">
+    <header className="h-14 px-4 flex items-center justify-between gap-3 border-b border-slate-200 dark:border-neutral-800 bg-white dark:bg-black text-slate-800 dark:text-neutral-100 select-none z-30 transition-colors">
       {/* Left: Sidebar Toggle & File Title */}
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <button
