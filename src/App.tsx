@@ -22,7 +22,7 @@ import {
   downloadDriveFileContent,
   DriveMeta,
 } from './utils/driveApi';
-import { getEffectiveAccentColor } from './utils/colorUtils';
+import { getEffectiveAccentColor, buildFaviconSvg } from './utils/colorUtils';
 
 const DEFAULT_STYLE_CONFIG: PreviewStyleConfig = {
   boldColor: '#ef4444', // Main theme accent color
@@ -117,6 +117,15 @@ export default function App() {
     root.style.setProperty('--accent-color', styleConfig.boldColor);
     localStorage.setItem('md_editor_theme', theme);
   }, [theme, isDark, styleConfig.boldColor]);
+
+  // Keep the browser tab favicon in sync with the app's theme accent color
+  useEffect(() => {
+    const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (!link) return;
+    const color = getEffectiveAccentColor(styleConfig.boldColor, isDark);
+    const svg = buildFaviconSvg(color);
+    link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  }, [styleConfig.boldColor, isDark]);
 
   // Persist files to localStorage
   useEffect(() => {

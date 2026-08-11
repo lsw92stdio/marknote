@@ -53,3 +53,24 @@ export function getTintedBackground(hex: string, alpha = 0.22): string {
   const { r, g, b } = hexToRgb(hex);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
+
+/**
+ * Darkens a hex color by the given ratio (0-1), used for the favicon's gradient end stop.
+ */
+export function darkenColor(hex: string, ratio = 0.15): string {
+  const { r, g, b } = hexToRgb(hex);
+  const clamp = (n: number) => Math.max(0, Math.min(255, Math.round(n)));
+  const toHex = (n: number) => clamp(n).toString(16).padStart(2, '0');
+  return `#${toHex(r * (1 - ratio))}${toHex(g * (1 - ratio))}${toHex(b * (1 - ratio))}`;
+}
+
+/**
+ * Builds the MarkNote favicon SVG markup for a given accent color, matching MarkNoteLogo's
+ * gradient background + M/arrow icon design so the browser tab icon stays in sync with the
+ * app's theme color.
+ */
+export function buildFaviconSvg(accentColor: string): string {
+  const gradientEnd = darkenColor(accentColor);
+  const iconColor = getContrastingTextColor(accentColor) === '#000000' ? '#000000' : '#ffffff';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="${accentColor}"/><stop offset="100%" stop-color="${gradientEnd}"/></linearGradient></defs><rect width="32" height="32" rx="7" fill="url(#g)"/><path d="M6 24V8L13 16L20 8V24" stroke="${iconColor}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M26 12L26 21M26 21L23 18M26 21L29 18" stroke="${iconColor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+}
