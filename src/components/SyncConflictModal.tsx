@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { MarkdownFile } from '../types';
 import { DriveFileInfo } from '../utils/driveApi';
+import { getDisplayName } from '../utils/fileUtils';
 
 export interface ConflictData {
   localFile: MarkdownFile;
@@ -125,7 +126,7 @@ export const SyncConflictModal: React.FC<SyncConflictModalProps> = ({
               </div>
               <div className="space-y-1.5 text-[11px] text-slate-600 dark:text-neutral-400">
                 <div className="truncate font-medium text-slate-800 dark:text-neutral-200">
-                  📄 {localFile.name}
+                  📄 {getDisplayName(localFile.name)}
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3 text-slate-400" />
@@ -156,7 +157,7 @@ export const SyncConflictModal: React.FC<SyncConflictModalProps> = ({
               </div>
               <div className="space-y-1.5 text-[11px] text-slate-600 dark:text-neutral-400">
                 <div className="truncate font-medium text-slate-800 dark:text-neutral-200">
-                  ☁️ {cloudFile.name}
+                  ☁️ {getDisplayName(cloudFile.name)}
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3 text-slate-400" />
@@ -184,7 +185,7 @@ export const SyncConflictModal: React.FC<SyncConflictModalProps> = ({
                   덮어쓰기 전 이전 로컬 파일을 사본 백업으로 보관
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-neutral-400 mt-0.5">
-                  예: <code className="bg-slate-200 dark:bg-neutral-800 px-1 rounded text-[10px]">[백업]_{localFile.name}</code> 파일 자동 생성
+                  예: <code className="bg-slate-200 dark:bg-neutral-800 px-1 rounded text-[10px]">[백업]_{getDisplayName(localFile.name)}</code> 파일 자동 생성
                 </span>
               </div>
             </label>

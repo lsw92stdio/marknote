@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { ViewMode, AppTheme } from '../types';
 import { getContrastingTextColor } from '../utils/colorUtils';
+import { getDisplayName } from '../utils/fileUtils';
 
 interface HeaderProps {
   fileName: string;
@@ -52,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
   accentColor = '#2563eb',
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [tempTitle, setTempTitle] = useState(fileName);
+  const [tempTitle, setTempTitle] = useState(getDisplayName(fileName));
 
   const handleTitleSubmit = () => {
     if (tempTitle.trim()) {
@@ -91,13 +92,13 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <h1
               onClick={() => {
-                setTempTitle(fileName);
+                setTempTitle(getDisplayName(fileName));
                 setIsEditingTitle(true);
               }}
               className="text-sm font-bold text-slate-800 dark:text-neutral-100 truncate cursor-pointer hover:underline decoration-dashed underline-offset-4"
-              title={`${fileName} (클릭하여 이름 변경)`}
+              title={`${getDisplayName(fileName)} (클릭하여 이름 변경)`}
             >
-              {fileName}
+              {getDisplayName(fileName)}
             </h1>
           )}
         </div>

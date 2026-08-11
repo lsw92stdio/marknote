@@ -12,7 +12,7 @@ import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { HelpModal } from './components/HelpModal';
 import { StatsBar } from './components/StatsBar';
 import { TableOfContents } from './components/TableOfContents';
-import { saveFileToDrive, getOrCreateDriveFolder } from './utils/driveApi';
+import { saveFileToDrive, getOrCreateDriveFolder, deleteDriveFile } from './utils/driveApi';
 import { getEffectiveAccentColor } from './utils/colorUtils';
 
 const DEFAULT_STYLE_CONFIG: PreviewStyleConfig = {
@@ -220,10 +220,18 @@ export default function App() {
   };
 
   const handleDeleteFile = (fileId: string) => {
+    const target = files.find((f) => f.id === fileId);
+
     const updatedFiles = files.filter((f) => f.id !== fileId);
     setFiles(updatedFiles);
     if (activeFileId === fileId && updatedFiles.length > 0) {
       setActiveFileId(updatedFiles[0].id);
+    }
+
+    if (target?.driveFileId && userProfile?.accessToken) {
+      deleteDriveFile(userProfile.accessToken, target.driveFileId).catch((err) => {
+        console.error('Drive delete error:', err);
+      });
     }
   };
 

@@ -20,6 +20,7 @@ import {
   DriveFileInfo,
 } from '../utils/driveApi';
 import { SyncConflictModal, ConflictData } from './SyncConflictModal';
+import { getDisplayName } from '../utils/fileUtils';
 
 interface GoogleDriveModalProps {
   clientId: string;
@@ -150,7 +151,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
     if (!userProfile?.accessToken) return;
 
     try {
-      setStatusMessage(`"${driveFile.name}" 정보 확인 중...`);
+      setStatusMessage(`"${getDisplayName(driveFile.name)}" 정보 확인 중...`);
       const cloudContent = await downloadDriveFileContent(userProfile.accessToken, driveFile.id);
 
       // Check if matching local file exists (by driveFileId or name)
@@ -175,7 +176,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
       // No conflict or contents are identical
       onImportDriveFile(driveFile.name, cloudContent, driveFile.id);
-      setStatusMessage(`"${driveFile.name}" 파일을 성공적으로 가져왔습니다.`);
+      setStatusMessage(`"${getDisplayName(driveFile.name)}" 파일을 성공적으로 가져왔습니다.`);
     } catch (err: any) {
       setStatusMessage(`다운로드 오류: ${err.message}`);
     }
@@ -208,7 +209,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
           cloudFile.id
         );
         onSyncFile(localFile.id, result.id);
-        setStatusMessage(`'${localFile.name}' 로컬 버전이 구글 드라이브에 성공적으로 적용되었습니다.`);
+        setStatusMessage(`'${getDisplayName(localFile.name)}' 로컬 버전이 구글 드라이브에 성공적으로 적용되었습니다.`);
       } else {
         // Option 2: Keep Cloud -> Overwrite Local Content with Cloud Content
         setStatusMessage(`클라우드 버전으로 로컬 파일 덮어쓰기 중...`);
@@ -219,7 +220,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         } else {
           onImportDriveFile(cloudFile.name, newContent, cloudFile.id);
         }
-        setStatusMessage(`'${cloudFile.name}' 클라우드 버전이 로컬에 적용되었습니다.`);
+        setStatusMessage(`'${getDisplayName(cloudFile.name)}' 클라우드 버전이 로컬에 적용되었습니다.`);
       }
 
       fetchDriveFiles();
@@ -407,7 +408,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                         >
                           <div className="truncate pr-2">
                             <p className="font-semibold text-slate-900 dark:text-slate-100 truncate text-xs">
-                              {df.name}
+                              {getDisplayName(df.name)}
                             </p>
                             <p className="text-[10px] text-slate-400">
                               {new Date(df.modifiedTime).toLocaleString('ko-KR')}

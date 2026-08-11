@@ -25,6 +25,7 @@ import {
 import { MarkdownFile, Folder as FolderType } from '../types';
 import { MarkNoteLogo } from './MarkNoteLogo';
 import { getContrastingTextColor } from '../utils/colorUtils';
+import { getDisplayName } from '../utils/fileUtils';
 
 interface SidebarProps {
   files: MarkdownFile[];
@@ -99,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const startRenaming = (file: MarkdownFile, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingFileId(file.id);
-    setEditingFileName(file.name);
+    setEditingFileName(getDisplayName(file.name));
   };
 
   const submitRename = (fileId: string) => {
@@ -139,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setAlertMessage('최소 한 개의 파일은 남겨두어야 합니다.');
       return;
     }
-    setDeleteTarget({ type: 'file', id: file.id, name: file.name });
+    setDeleteTarget({ type: 'file', id: file.id, name: getDisplayName(file.name) });
   };
 
   // Request Folder Delete
@@ -623,7 +624,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             <p className="text-xs text-slate-500 dark:text-neutral-400 truncate">
-              이동할 파일: <strong className="text-slate-800 dark:text-neutral-200">{movingFile.name}</strong>
+              이동할 파일: <strong className="text-slate-800 dark:text-neutral-200">{getDisplayName(movingFile.name)}</strong>
             </p>
 
             <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
@@ -762,7 +763,7 @@ const FileItem: React.FC<FileItemProps> = ({
             className="w-full px-1 py-0.5 text-xs rounded bg-white text-slate-900 border border-blue-500 focus:outline-none"
           />
         ) : (
-          <span className="truncate" title={file.name}>{file.name}</span>
+          <span className="truncate" title={getDisplayName(file.name)}>{getDisplayName(file.name)}</span>
         )}
       </div>
 

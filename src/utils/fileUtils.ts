@@ -2,6 +2,11 @@ import { toPng, toJpeg } from 'html-to-image';
 import { PreviewStyleConfig, TOCItem } from '../types';
 import { getEffectiveAccentColor, getTintedBackground } from './colorUtils';
 
+// Strips the .md extension for display purposes only — files are always .md internally
+export function getDisplayName(name: string): string {
+  return name.replace(/\.md$/i, '');
+}
+
 // File Download Helper
 export function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
