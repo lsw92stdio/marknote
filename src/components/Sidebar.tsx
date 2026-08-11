@@ -753,7 +753,7 @@ const FileItem: React.FC<FileItemProps> = ({
         e.dataTransfer.effectAllowed = 'move';
       }}
       onClick={onSelect}
-      className={`group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-grab active:cursor-grabbing transition-colors ${
+      className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-grab active:cursor-grabbing transition-colors ${
         isActive
           ? 'font-medium shadow-xs'
           : 'hover:bg-slate-200/70 dark:hover:bg-neutral-800/80 text-slate-700 dark:text-neutral-300'
@@ -807,60 +807,64 @@ const FileItem: React.FC<FileItemProps> = ({
         >
           <Star className={`w-3 h-3 ${file.isFavorite ? 'fill-current' : ''}`} />
         </button>
+      </div>
 
-        {/* More Actions on Hover */}
-        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-opacity">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenMoveModal();
-            }}
-            className={`p-1 rounded transition-colors ${
-              isActive
-                ? 'text-white/80 hover:text-white hover:bg-white/20'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-            }`}
-            title="폴더로 이동"
-          >
-            <FolderInput className="w-3 h-3" />
-          </button>
-          <button
-            onClick={onStartRename}
-            className={`p-1 rounded transition-colors ${
-              isActive
-                ? 'text-white/80 hover:text-white hover:bg-white/20'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-            }`}
-            title="이름 변경"
-          >
-            <Edit2 className="w-3 h-3" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDuplicate();
-            }}
-            className={`p-1 rounded transition-colors ${
-              isActive
-                ? 'text-white/80 hover:text-white hover:bg-white/20'
-                : 'text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-            }`}
-            title="복제"
-          >
-            <Copy className="w-3 h-3" />
-          </button>
-          <button
-            onClick={onDelete}
-            className={`p-1 rounded transition-colors ${
-              isActive
-                ? 'text-red-200 hover:text-red-100 hover:bg-white/20'
-                : 'text-slate-400 hover:text-red-500 hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-            }`}
-            title="삭제"
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
-        </div>
+      {/* Hover Action Overlay — blurs the tail of the name and floats action icons on top, without reserving layout space */}
+      <div
+        className={`absolute inset-y-0 right-0 flex items-center gap-0.5 pl-4 pr-1 rounded-r-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity backdrop-blur-[3px] ${
+          isActive ? 'bg-black/15' : 'bg-white/60 dark:bg-black/50'
+        }`}
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenMoveModal();
+          }}
+          className={`p-1 rounded transition-colors ${
+            isActive
+              ? 'text-white/80 hover:text-white hover:bg-white/20'
+              : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
+          }`}
+          title="폴더로 이동"
+        >
+          <FolderInput className="w-3 h-3" />
+        </button>
+        <button
+          onClick={onStartRename}
+          className={`p-1 rounded transition-colors ${
+            isActive
+              ? 'text-white/80 hover:text-white hover:bg-white/20'
+              : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
+          }`}
+          title="이름 변경"
+        >
+          <Edit2 className="w-3 h-3" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate();
+          }}
+          className={`p-1 rounded transition-colors ${
+            isActive
+              ? 'text-white/80 hover:text-white hover:bg-white/20'
+              : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
+          }`}
+          title="복제"
+        >
+          <Copy className="w-3 h-3" />
+        </button>
+        <button
+          onClick={onDelete}
+          className={`p-1 rounded transition-colors ${
+            isActive
+              ? 'text-red-200 hover:text-red-100 hover:bg-white/20'
+              : 'text-slate-500 dark:text-neutral-400 hover:text-red-500 hover:bg-slate-200/60 dark:hover:bg-neutral-800'
+          }`}
+          title="삭제"
+        >
+          <Trash2 className="w-3 h-3" />
+        </button>
       </div>
     </div>
   );

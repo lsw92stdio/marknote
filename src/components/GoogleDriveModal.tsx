@@ -21,6 +21,7 @@ import {
 } from '../utils/driveApi';
 import { SyncConflictModal, ConflictData } from './SyncConflictModal';
 import { getDisplayName } from '../utils/fileUtils';
+import { ToggleSwitch } from './ToggleSwitch';
 
 interface GoogleDriveModalProps {
   clientId: string;
@@ -310,17 +311,15 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                 </div>
 
                 <div className="pt-2 border-t border-emerald-200 dark:border-emerald-800/50 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={autoSyncEnabled}
-                      onChange={onToggleAutoSync}
-                      className="rounded text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
-                      파일 수정 시 자동 드라이브 동기화
-                    </span>
-                  </label>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
+                    파일 수정 시 자동 드라이브 동기화
+                  </span>
+                  <ToggleSwitch
+                    checked={autoSyncEnabled}
+                    onChange={() => onToggleAutoSync()}
+                    accentColor={accentColor}
+                    ariaLabel="파일 수정 시 자동 드라이브 동기화"
+                  />
                 </div>
               </div>
             ) : (
