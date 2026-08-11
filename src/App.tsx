@@ -274,8 +274,12 @@ export default function App() {
     if (!autoSyncEnabled || !userProfile?.accessToken || !activeFile) return;
 
     const timer = setTimeout(async () => {
+      setIsSyncing(true);
+      setFiles((prev) =>
+        prev.map((f) => (f.id === activeFile.id ? { ...f, syncStatus: 'syncing' } : f))
+      );
+
       try {
-        setIsSyncing(true);
         const folderId = await getOrCreateDriveFolder(userProfile.accessToken!);
         const res = await saveFileToDrive(
           userProfile.accessToken!,
@@ -299,10 +303,13 @@ export default function App() {
         );
       } catch (err) {
         console.error('Auto sync error:', err);
+        setFiles((prev) =>
+          prev.map((f) => (f.id === activeFile.id ? { ...f, syncStatus: 'error' } : f))
+        );
       } finally {
         setIsSyncing(false);
       }
-    }, 4000); // Debounce 4 seconds
+    }, 1500); // Debounce — short enough that the status bar reflects changes promptly
 
     return () => clearTimeout(timer);
   }, [activeFile?.content, autoSyncEnabled, userProfile?.accessToken]);
@@ -625,12 +632,12 @@ export default function App() {
                   onScroll={viewMode === 'split' ? handlePreviewScroll : undefined}
                 />
 
-                {/* Table of Contents Floating Widget */}
+                {/* Table of Contents Floating Widget — hidden while Settings is open to avoid the same TOC UI appearing twice on screen */}
                 <TableOfContents
                   content={activeFile?.content || ''}
                   isDark={isDark}
                   accentColor={effectiveAccentColor}
-                  enabled={tocEnabled}
+                  enabled={tocEnabled && !isSettingsModalOpen}
                   position={tocPosition}
                 />
               </div>

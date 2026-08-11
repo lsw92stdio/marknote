@@ -1,5 +1,5 @@
 import React from 'react';
-import { CloudCheck, CloudUpload, Cloud, Clock, FileText, Hash } from 'lucide-react';
+import { CloudCheck, CloudUpload, Cloud, RefreshCw, AlertTriangle, Clock, FileText, Hash } from 'lucide-react';
 import { calculateTextStats } from '../utils/fileUtils';
 
 interface StatsBarProps {
@@ -54,10 +54,20 @@ export const StatsBar: React.FC<StatsBarProps> = ({
 
       {/* Right: Sync Badge */}
       <div className="flex items-center gap-1.5 font-sans">
-        {syncStatus === 'synced' ? (
+        {syncStatus === 'syncing' ? (
+          <span className="flex items-center gap-1 text-sky-500 font-medium">
+            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+            <span className="hidden sm:inline">동기화 중...</span>
+          </span>
+        ) : syncStatus === 'synced' ? (
           <span className="flex items-center gap-1 text-emerald-500 font-medium">
             <CloudCheck className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Drive 동기화됨</span>
+          </span>
+        ) : syncStatus === 'error' ? (
+          <span className="flex items-center gap-1 text-red-500 font-medium" title="문서를 수정하면 자동으로 다시 시도합니다">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">동기화 실패</span>
           </span>
         ) : syncStatus === 'modified' ? (
           <span className="flex items-center gap-1 text-amber-500 font-medium">

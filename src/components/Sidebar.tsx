@@ -15,6 +15,7 @@ import {
   Cloud,
   CloudCheck,
   CloudUpload,
+  RefreshCw,
   FolderPlus,
   FilePlus,
   FolderInput,
@@ -175,6 +176,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
   });
 
   const getSyncStatusIcon = (status?: string, isActive?: boolean) => {
+    if (status === 'syncing') {
+      return (
+        <span title="드라이브에 동기화 중...">
+          <RefreshCw className={`w-3.5 h-3.5 animate-spin ${isActive ? 'text-sky-200' : 'text-sky-500'}`} />
+        </span>
+      );
+    }
+    if (status === 'error') {
+      return (
+        <span title="동기화 실패 — 문서를 수정하면 다시 시도합니다">
+          <AlertTriangle className={`w-3.5 h-3.5 ${isActive ? 'text-red-200' : 'text-red-500'}`} />
+        </span>
+      );
+    }
     if (status === 'synced') {
       return (
         <span title="드라이브와 동기화됨">

@@ -128,14 +128,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               />
             </div>
 
-            <div className={`space-y-1.5 transition-opacity ${tocEnabled ? '' : 'opacity-40 pointer-events-none'}`}>
-              <span className="text-slate-600 dark:text-neutral-300">화면 위치</span>
-              <div className="grid grid-cols-2 gap-1.5">
+            <div className={`space-y-2 transition-opacity ${tocEnabled ? '' : 'opacity-40 pointer-events-none'}`}>
+              <div className="text-slate-600 dark:text-neutral-300">화면 위치</div>
+              <div className="grid grid-cols-2 gap-2">
                 {TOC_POSITION_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() => onChangeTocPosition(opt.value)}
-                    className={`py-1.5 px-2 rounded-lg border text-[11px] font-medium transition-all ${
+                    className={`py-1.5 px-2 rounded-lg border text-[11px] font-medium leading-tight whitespace-nowrap transition-all ${
                       tocPosition === opt.value
                         ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold'
                         : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-slate-300 dark:hover:border-neutral-700'
