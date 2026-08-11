@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="h-14 px-4 flex items-center justify-between border-b border-slate-200 dark:border-neutral-800 bg-white dark:bg-black text-slate-800 dark:text-neutral-100 select-none z-30 transition-colors">
       {/* Left: Sidebar Toggle & File Title */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <button
           onClick={onToggleSidebar}
           className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-800 text-slate-600 dark:text-neutral-300 transition-colors"
@@ -102,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Middle: View Mode Selector - Desktop & Mobile Responsive */}
       {/* Desktop Mode (md+) */}
-      <div className="hidden md:flex items-center p-1 rounded-xl bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-medium">
+      <div className="hidden md:flex items-center p-1 rounded-xl bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-medium shrink-0">
         <button
           onClick={() => onChangeViewMode('split')}
           className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
@@ -144,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Mobile Mode Compact View Switcher (< md) */}
-      <div className="flex md:hidden items-center p-0.5 rounded-lg bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs">
+      <div className="flex md:hidden items-center p-0.5 rounded-lg bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs shrink-0">
         <button
           onClick={() => onChangeViewMode('editor')}
           className={`p-1.5 rounded transition-all ${
@@ -178,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right: Actions (Style Customizer, Export, Settings, Dark mode) */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         {/* Style Customizer */}
         <button
           onClick={onOpenStyleCustomizer}

@@ -7,6 +7,7 @@ import {
   Download,
   LogOut,
   AlertCircle,
+  AlertTriangle,
   FolderCheck,
 } from 'lucide-react';
 import { UserProfile, MarkdownFile } from '../types';
@@ -64,6 +65,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
 
   // Conflict Resolution State
   const [activeConflict, setActiveConflict] = useState<ConflictData | null>(null);
+  const [isDisconnectConfirmOpen, setIsDisconnectConfirmOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -232,10 +234,15 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
     }
   };
 
-  const handleDisconnect = () => {
+  const handleRequestDisconnect = () => {
+    setIsDisconnectConfirmOpen(true);
+  };
+
+  const handleConfirmDisconnect = () => {
     onUpdateUserProfile(null);
     setDriveFileList([]);
     setStatusMessage('Google 계정 연결이 해제되었습니다.');
+    setIsDisconnectConfirmOpen(false);
   };
 
   return (
@@ -306,7 +313,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
                   </div>
 
                   <button
-                    onClick={handleDisconnect}
+                    onClick={handleRequestDisconnect}
                     className="p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 transition-colors"
                     title="로그아웃"
                   >
@@ -444,6 +451,48 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
         accentColor={accentColor}
         isDark={isDark}
       />
+
+      {/* Disconnect Confirmation Dialog */}
+      {isDisconnectConfirmOpen && (
+        <div
+          onClick={() => setIsDisconnectConfirmOpen(false)}
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 w-full max-w-sm shadow-xl space-y-4"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Google 계정 연결 해제</h3>
+                <p className="text-xs leading-relaxed text-slate-600 dark:text-neutral-400">
+                  정말 연결을 해제하시겠습니까? 로컬에 저장된 문서는 그대로 남지만, 자동 동기화는 다시 연결하기 전까지 중단됩니다.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-neutral-800">
+              <button
+                type="button"
+                onClick={() => setIsDisconnectConfirmOpen(false)}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-slate-700 dark:text-neutral-300"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDisconnect}
+                className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-xs"
+              >
+                연결 해제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -7,12 +7,6 @@ export const INITIAL_FOLDERS: Folder[] = [
     parentId: null,
     createdAt: Date.now() - 1000000,
   },
-  {
-    id: 'folder-2',
-    name: '개인 프로젝트',
-    parentId: null,
-    createdAt: Date.now() - 500000,
-  }
 ];
 
 export const INITIAL_FILES: MarkdownFile[] = [
@@ -98,32 +92,7 @@ $$
 
 ---
 
-> **Tip:** 오른쪽 상단의 **☁️ Google Drive** 버튼을 클릭하여 구글 계정을 연결하면, 작성한 모든 문서를 드라이브에 안전하게 동기화하고 관리할 수 있습니다!
+> **Tip:** 사이드바 하단의 **☁️ Google Drive** 버튼을 클릭하여 구글 계정을 연결하면, 작성한 모든 문서를 드라이브에 안전하게 동기화하고 관리할 수 있습니다!
 `
   },
-  {
-    id: 'file-project-notes',
-    name: '프로젝트 아이디어.md',
-    folderId: 'folder-2',
-    createdAt: Date.now() - 50000,
-    updatedAt: Date.now() - 5000,
-    isFavorite: false,
-    syncStatus: 'local_only',
-    content: `# 🚀 나의 새 프로젝트 개발 계획
-
-## 목표
-- GitHub Pages / 무료 호스팅에 바로 배포 가능한 마크다운 에디터 서비스 개발
-
-## 주요 기술 스택
-- **React 19 + TypeScript + Vite**
-- **Tailwind CSS v4**
-- **React Markdown + Remark / Rehype**
-- **Google Drive REST API** (클라우드 파일 동기화)
-
-\`\`\`bash
-# 빌드 명령
-npm run build
-\`\`\`
-`
-  }
 ];

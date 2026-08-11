@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   X,
   Check,
+  MoreVertical,
 } from 'lucide-react';
 import { MarkdownFile, Folder as FolderType } from '../types';
 import { MarkNoteLogo } from './MarkNoteLogo';
@@ -74,7 +75,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [openFolderIds, setOpenFolderIds] = useState<Record<string, boolean>>({
     'folder-1': true,
-    'folder-2': true,
   });
   const [editingFileId, setEditingFileId] = useState<string | null>(null);
   const [editingFileName, setEditingFileName] = useState('');
@@ -740,6 +740,7 @@ const FileItem: React.FC<FileItemProps> = ({
   accentColor = '#2563eb',
 }) => {
   const textColor = getContrastingTextColor(accentColor);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div
@@ -805,64 +806,84 @@ const FileItem: React.FC<FileItemProps> = ({
         >
           <Star className={`w-3 h-3 ${file.isFavorite ? 'fill-current' : ''}`} />
         </button>
-      </div>
 
-      {/* Hover Action Overlay — blurs the tail of the name and floats action icons on top, without reserving layout space. Stops short of the sync/favorite icons (which stack above via z-10) so they stay reachable. */}
-      <div
-        className={`absolute inset-y-0 right-11 flex items-center gap-0.5 pl-4 pr-1 rounded-l-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity backdrop-blur-[3px] ${
-          isActive ? 'bg-black/15' : 'bg-white/60 dark:bg-black/50'
-        }`}
-      >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenMoveModal();
-          }}
-          className={`p-1 rounded transition-colors ${
-            isActive
-              ? 'text-white/80 hover:text-white hover:bg-white/20'
-              : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-          }`}
-          title="폴더로 이동"
-        >
-          <FolderInput className="w-3 h-3" />
-        </button>
-        <button
-          onClick={onStartRename}
-          className={`p-1 rounded transition-colors ${
-            isActive
-              ? 'text-white/80 hover:text-white hover:bg-white/20'
-              : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-          }`}
-          title="이름 변경"
-        >
-          <Edit2 className="w-3 h-3" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDuplicate();
-          }}
-          className={`p-1 rounded transition-colors ${
-            isActive
-              ? 'text-white/80 hover:text-white hover:bg-white/20'
-              : 'text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-          }`}
-          title="복제"
-        >
-          <Copy className="w-3 h-3" />
-        </button>
-        <button
-          onClick={onDelete}
-          className={`p-1 rounded transition-colors ${
-            isActive
-              ? 'text-red-200 hover:text-red-100 hover:bg-white/20'
-              : 'text-slate-500 dark:text-neutral-400 hover:text-red-500 hover:bg-slate-200/60 dark:hover:bg-neutral-800'
-          }`}
-          title="삭제"
-        >
-          <Trash2 className="w-3 h-3" />
-        </button>
+        {/* More Actions Menu */}
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen((v) => !v);
+            }}
+            className={`p-0.5 rounded transition-colors ${
+              isActive
+                ? 'text-white/80 hover:text-white hover:bg-white/20'
+                : 'text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-neutral-800'
+            }`}
+            title="더보기"
+          >
+            <MoreVertical className="w-3.5 h-3.5" />
+          </button>
+
+          {isMenuOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(false);
+                }}
+              />
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute right-0 top-full mt-1 z-50 w-36 rounded-xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg py-1 text-slate-700 dark:text-neutral-200 overflow-hidden"
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    onOpenMoveModal();
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-slate-100 dark:hover:bg-neutral-800 text-left"
+                >
+                  <FolderInput className="w-3.5 h-3.5" />
+                  <span>폴더 이동</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    onStartRename(e);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-slate-100 dark:hover:bg-neutral-800 text-left"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>이름 변경</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    onDuplicate();
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-slate-100 dark:hover:bg-neutral-800 text-left"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>복제</span>
+                </button>
+                <div className="my-1 border-t border-slate-100 dark:border-neutral-800" />
+                <button
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    onDelete(e);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 text-left"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>삭제</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

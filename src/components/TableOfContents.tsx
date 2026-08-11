@@ -39,7 +39,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
 
   return (
     <div
-      className={`fixed z-30 transition-all ${POSITION_CLASSES[position]} ${
+      className={`absolute z-30 transition-all ${POSITION_CLASSES[position]} ${
         isOpen ? 'w-64 shadow-xl' : 'w-auto'
       }`}
     >
