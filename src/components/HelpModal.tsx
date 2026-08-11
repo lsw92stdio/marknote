@@ -268,6 +268,41 @@ console.log(greeting);
                     Ctrl + Shift + Z / Ctrl + Y
                   </kbd>
                 </div>
+
+                <div className="flex items-center justify-between p-3">
+                  <span className="font-medium">들여쓰기 취소 (Outdent)</span>
+                  <kbd className="px-2 py-1 rounded bg-slate-100 dark:bg-neutral-900 border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Shift + Tab
+                  </kbd>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-900">
+                  <span className="font-medium">제목 1 / 2 / 3</span>
+                  <kbd className="px-2 py-1 rounded bg-white dark:bg-black border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Ctrl + 1 / 2 / 3
+                  </kbd>
+                </div>
+
+                <div className="flex items-center justify-between p-3">
+                  <span className="font-medium">현재 줄 복제</span>
+                  <kbd className="px-2 py-1 rounded bg-slate-100 dark:bg-neutral-900 border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Ctrl + D
+                  </kbd>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-neutral-900">
+                  <span className="font-medium">문서 내 찾기</span>
+                  <kbd className="px-2 py-1 rounded bg-white dark:bg-black border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Ctrl + F
+                  </kbd>
+                </div>
+
+                <div className="flex items-center justify-between p-3">
+                  <span className="font-medium">찾아 바꾸기</span>
+                  <kbd className="px-2 py-1 rounded bg-slate-100 dark:bg-neutral-900 border border-slate-300 dark:border-neutral-700 font-mono text-[11px]">
+                    Ctrl + H
+                  </kbd>
+                </div>
               </div>
             </div>
           )}
