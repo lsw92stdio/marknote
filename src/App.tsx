@@ -17,7 +17,6 @@ import { getEffectiveAccentColor } from './utils/colorUtils';
 
 const DEFAULT_STYLE_CONFIG: PreviewStyleConfig = {
   boldColor: '#ef4444', // Main theme accent color
-  boldBgColor: 'transparent',
   headingColor: 'default',
   fontFamily: 'sans',
   codeTheme: 'github-dark',

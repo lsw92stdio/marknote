@@ -6,7 +6,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { Copy, Check } from 'lucide-react';
 import { PreviewStyleConfig } from '../types';
-import { getEffectiveAccentColor } from '../utils/colorUtils';
+import { getEffectiveAccentColor, getTintedBackground } from '../utils/colorUtils';
 
 interface PreviewProps {
   content: string;
@@ -53,7 +53,9 @@ export const Preview: React.FC<PreviewProps> = ({ content, styleConfig, isDark }
   // Dynamic inline styles for customizable user colors
   const customCssVariables: React.CSSProperties = {
     '--preview-bold-color': effectiveAccentColor || '#ef4444',
-    '--preview-bold-bg': styleConfig.boldBgColor || 'transparent',
+    '--preview-bold-bg': (styleConfig.enableBoldBg ?? true)
+      ? getTintedBackground(effectiveAccentColor || '#ef4444')
+      : 'transparent',
     '--preview-link-color': effectiveAccentColor || '#ef4444',
     '--preview-heading-color':
       styleConfig.headingColor === 'default'
@@ -79,7 +81,7 @@ export const Preview: React.FC<PreviewProps> = ({ content, styleConfig, isDark }
               <strong
                 style={{
                   color: (styleConfig.enableBoldColor ?? true) ? 'var(--preview-bold-color)' : 'inherit',
-                  backgroundColor: (styleConfig.enableBoldColor ?? true) ? 'var(--preview-bold-bg)' : 'transparent',
+                  backgroundColor: 'var(--preview-bold-bg)',
                 }}
                 className="font-bold px-0.5 rounded transition-colors"
               >

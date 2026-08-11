@@ -44,3 +44,12 @@ export function getContrastingTextColor(hexColor: string): '#000000' | '#ffffff'
   const lum = getLuminance(hexColor);
   return lum > 160 ? '#000000' : '#ffffff';
 }
+
+/**
+ * Converts an accent hex color into a low-alpha tint suitable as a highlighter background,
+ * so the highlight always matches whichever theme accent color is currently selected.
+ */
+export function getTintedBackground(hex: string, alpha = 0.22): string {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}

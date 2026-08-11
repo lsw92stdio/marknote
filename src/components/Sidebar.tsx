@@ -337,7 +337,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     ) : (
                       <Folder className="w-4 h-4 shrink-0" style={{ color: accentColor }} />
                     )}
-                    <span className="truncate">{folder.name}</span>
+                    <span className="truncate" title={folder.name}>{folder.name}</span>
                     <span className="text-[10px] text-slate-400 font-mono font-normal">
                       ({folderFiles.length})
                     </span>
@@ -762,7 +762,7 @@ const FileItem: React.FC<FileItemProps> = ({
             className="w-full px-1 py-0.5 text-xs rounded bg-white text-slate-900 border border-blue-500 focus:outline-none"
           />
         ) : (
-          <span className="truncate">{file.name}</span>
+          <span className="truncate" title={file.name}>{file.name}</span>
         )}
       </div>
 

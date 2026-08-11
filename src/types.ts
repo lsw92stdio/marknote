@@ -20,7 +20,6 @@ export interface Folder {
 
 export interface PreviewStyleConfig {
   boldColor: string;
-  boldBgColor: string;
   linkColor?: string;
   headingColor: string;
   fontFamily: 'sans' | 'serif' | 'mono';
@@ -28,6 +27,7 @@ export interface PreviewStyleConfig {
   fontSize: 'sm' | 'base' | 'lg';
   lineHeight: 'tight' | 'normal' | 'relaxed';
   enableBoldColor?: boolean;
+  enableBoldBg?: boolean;
   accentHeadings?: boolean;
   accentTable?: boolean;
   accentHr?: boolean;

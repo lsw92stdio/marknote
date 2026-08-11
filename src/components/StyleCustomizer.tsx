@@ -22,14 +22,6 @@ const BOLD_COLOR_PRESETS = [
   { name: '블랙/화이트', hex: '#020617' },
 ];
 
-const BOLD_BG_PRESETS = [
-  { name: '없음 (투명)', val: 'transparent' },
-  { name: '노랑 형광펜', val: 'rgba(254, 240, 138, 0.4)' },
-  { name: '연두 형광펜', val: 'rgba(187, 247, 208, 0.4)' },
-  { name: '분홍 형광펜', val: 'rgba(251, 207, 232, 0.4)' },
-  { name: '파랑 형광펜', val: 'rgba(191, 219, 254, 0.4)' },
-];
-
 export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
   styleConfig,
   onChangeStyleConfig,
@@ -52,7 +44,6 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
   const handleResetDefaults = () => {
     onChangeStyleConfig({
       boldColor: '#ef4444',
-      boldBgColor: 'transparent',
       linkColor: '#ef4444',
       headingColor: 'default',
       fontFamily: 'sans',
@@ -60,6 +51,7 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       fontSize: 'base',
       lineHeight: 'normal',
       enableBoldColor: true,
+      enableBoldBg: true,
       accentHeadings: true,
       accentTable: true,
       accentHr: true,
@@ -176,6 +168,19 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
 
               <label className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 hover:bg-slate-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer">
                 <span className="font-medium text-slate-800 dark:text-neutral-200 text-[11.5px]">
+                  강조 문구에 형광펜(배경색) 효과 적용
+                </span>
+                <input
+                  type="checkbox"
+                  checked={styleConfig.enableBoldBg ?? true}
+                  onChange={(e) => updateField('enableBoldBg', e.target.checked)}
+                  style={{ accentColor: styleConfig.boldColor }}
+                  className="w-4 h-4 rounded cursor-pointer"
+                />
+              </label>
+
+              <label className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 hover:bg-slate-50 dark:hover:bg-neutral-900 transition-colors cursor-pointer">
+                <span className="font-medium text-slate-800 dark:text-neutral-200 text-[11.5px]">
                   타이틀(#, ##, ###)에 테마 색상 적용
                 </span>
                 <input
@@ -215,35 +220,7 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
             </div>
           </div>
 
-          {/* Section 3: Highlight Background */}
-          <div className="space-y-2.5 pt-3 border-t border-slate-200 dark:border-neutral-800">
-            <label className="font-bold text-slate-900 dark:text-white block text-xs">
-              강조 문구 배경색 (형광펜 효과)
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {BOLD_BG_PRESETS.map((preset) => (
-                <button
-                  key={preset.val}
-                  onClick={() => updateField('boldBgColor', preset.val)}
-                  className={`py-2 px-2.5 rounded-lg border text-[11px] font-medium text-left transition-all ${
-                    styleConfig.boldBgColor === preset.val
-                      ? 'border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold shadow-2xs'
-                      : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-slate-300 dark:hover:border-neutral-700'
-                  }`}
-                >
-                  <span
-                    className="inline-block px-1 rounded mr-1.5 border border-black/10 dark:border-white/10"
-                    style={{ backgroundColor: preset.val }}
-                  >
-                    가나다
-                  </span>
-                  <span>{preset.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Section 4: Font Family */}
+          {/* Section 3: Font Family */}
           <div className="space-y-2.5 pt-3 border-t border-slate-200 dark:border-neutral-800">
             <label className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
               <Type className="w-3.5 h-3.5 text-blue-500" />
@@ -283,7 +260,7 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
             </div>
           </div>
 
-          {/* Section 5: Font Size & Line Height */}
+          {/* Section 4: Font Size & Line Height */}
           <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 dark:border-neutral-800">
             <div className="space-y-1.5">
               <label className="font-bold text-slate-900 dark:text-white block text-xs">글자 크기</label>

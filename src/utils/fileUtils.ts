@@ -1,5 +1,6 @@
 import { toPng, toJpeg } from 'html-to-image';
 import { PreviewStyleConfig, TOCItem } from '../types';
+import { getEffectiveAccentColor, getTintedBackground } from './colorUtils';
 
 // File Download Helper
 export function downloadBlob(blob: Blob, filename: string) {
@@ -37,6 +38,11 @@ export function exportAsHtml(filename: string, renderedHtml: string, title: stri
     ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
     : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
 
+  const effectiveAccentColor = getEffectiveAccentColor(styleConfig.boldColor, isDark) || '#ef4444';
+  const boldBgValue = (styleConfig.enableBoldBg ?? true)
+    ? getTintedBackground(effectiveAccentColor)
+    : 'transparent';
+
   const fullHtml = `<!DOCTYPE html>
 <html lang="ko" class="${isDark ? 'dark' : ''}">
 <head>
@@ -47,9 +53,9 @@ export function exportAsHtml(filename: string, renderedHtml: string, title: stri
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <style>
     :root {
-      --preview-bold-color: ${styleConfig.boldColor || '#ef4444'};
-      --preview-bold-bg: ${styleConfig.boldBgColor || 'transparent'};
-      --preview-link-color: ${styleConfig.boldColor || '#ef4444'};
+      --preview-bold-color: ${effectiveAccentColor};
+      --preview-bold-bg: ${boldBgValue};
+      --preview-link-color: ${effectiveAccentColor};
       --preview-heading-color: ${styleConfig.headingColor === 'default' ? 'inherit' : styleConfig.headingColor};
     }
     * {
@@ -89,11 +95,7 @@ export function exportAsHtml(filename: string, renderedHtml: string, title: stri
           ? 'var(--preview-bold-color)'
           : 'inherit'
       } !important;
-      background-color: ${
-        (styleConfig.enableBoldColor ?? true)
-          ? 'var(--preview-bold-bg)'
-          : 'transparent'
-      } !important;
+      background-color: var(--preview-bold-bg) !important;
       padding: 0 2px;
       border-radius: 2px;
     }

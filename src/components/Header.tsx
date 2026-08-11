@@ -95,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsEditingTitle(true);
               }}
               className="text-sm font-bold text-slate-800 dark:text-neutral-100 truncate cursor-pointer hover:underline decoration-dashed underline-offset-4"
-              title="클릭하여 파일 이름 변경"
+              title={`${fileName} (클릭하여 이름 변경)`}
             >
               {fileName}
             </h1>
