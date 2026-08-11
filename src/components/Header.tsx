@@ -102,10 +102,10 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Middle: View Mode Selector - Desktop & Mobile Responsive */}
       {/* Desktop Mode (md+) */}
-      <div className="hidden md:flex items-center p-1 rounded-xl bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-medium shrink-0">
+      <div className="hidden md:flex items-center h-8 p-1 rounded-lg bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-xs font-medium shrink-0 box-border">
         <button
           onClick={() => onChangeViewMode('split')}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1.5 h-6 px-3 rounded-md transition-all ${
             viewMode === 'split'
               ? 'bg-white dark:bg-neutral-800 font-semibold shadow-xs'
               : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200'
@@ -118,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button
           onClick={() => onChangeViewMode('editor')}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1.5 h-6 px-3 rounded-md transition-all ${
             viewMode === 'editor'
               ? 'bg-white dark:bg-neutral-800 font-semibold shadow-xs'
               : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200'
@@ -131,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button
           onClick={() => onChangeViewMode('preview')}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1.5 h-6 px-3 rounded-md transition-all ${
             viewMode === 'preview'
               ? 'bg-white dark:bg-neutral-800 font-semibold shadow-xs'
               : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-200'
@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Style Customizer */}
         <button
           onClick={onOpenStyleCustomizer}
-          className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs"
+          className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs box-border"
           title="결과물 디자인 & 강조 색상 고르기"
         >
           <Palette className="w-3.5 h-3.5" style={{ color: accentColor }} />
@@ -192,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Settings */}
         <button
           onClick={onOpenSettings}
-          className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs"
+          className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs box-border"
           title="설정"
         >
           <Settings className="w-3.5 h-3.5" style={{ color: accentColor }} />
@@ -202,7 +202,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Export Button - Bound to Accent Color */}
         <button
           onClick={onOpenExportModal}
-          className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg text-xs font-semibold shadow-xs transition-opacity hover:opacity-90"
+          className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold shadow-xs transition-opacity hover:opacity-90 box-border"
           style={{ backgroundColor: accentColor, color: getContrastingTextColor(accentColor) }}
           title="내보내기 (.md, .txt, .html, 이미지)"
         >
@@ -214,7 +214,7 @@ export const Header: React.FC<HeaderProps> = ({
         {onOpenHelpModal && (
           <button
             onClick={onOpenHelpModal}
-            className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs"
+            className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-semibold text-slate-700 dark:text-neutral-200 transition-colors shadow-xs box-border"
             title="마크다운 작성 도움말 & 단축키"
           >
             <HelpCircle className="w-3.5 h-3.5" style={{ color: accentColor }} />
@@ -227,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Dark / Light Mode Toggle */}
         <button
           onClick={onToggleTheme}
-          className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 text-xs font-medium transition-colors box-border"
           title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드(블랙)로 전환'}
         >
           {theme === 'dark' ? (
