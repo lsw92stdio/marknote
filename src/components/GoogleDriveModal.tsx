@@ -22,6 +22,7 @@ import {
 import { SyncConflictModal, ConflictData } from './SyncConflictModal';
 
 interface GoogleDriveModalProps {
+  clientId: string;
   userProfile: UserProfile | null;
   onUpdateUserProfile: (profile: UserProfile | null) => void;
   files: MarkdownFile[];
@@ -32,14 +33,13 @@ interface GoogleDriveModalProps {
   isDark: boolean;
   isOpen: boolean;
   onClose: () => void;
-  customClientId?: string;
-  onUpdateClientId?: (id: string) => void;
   autoSyncEnabled: boolean;
   onToggleAutoSync: () => void;
   accentColor?: string;
 }
 
 export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
+  clientId,
   userProfile,
   onUpdateUserProfile,
   files,
@@ -50,8 +50,6 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   isDark,
   isOpen,
   onClose,
-  customClientId = '',
-  onUpdateClientId,
   autoSyncEnabled,
   onToggleAutoSync,
   accentColor = '#2563eb',
@@ -68,10 +66,10 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({
   if (!isOpen) return null;
 
   const handleConnect = async () => {
-    const defaultFallbackId =
-      ((import.meta as any).env?.VITE_GOOGLE_CLIENT_ID as string) ||
-      '641006858643-4q8md5c0a3e8.apps.googleusercontent.com';
-    const clientId = customClientId.trim() || defaultFallbackId;
+    if (!clientId) {
+      setStatusMessage('관리자가 아직 Google 로그인을 설정하지 않았습니다.');
+      return;
+    }
 
     setIsConnecting(true);
     setStatusMessage('Google 계정 인증 진행 중...');

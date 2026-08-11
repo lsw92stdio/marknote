@@ -25,10 +25,7 @@ const DEFAULT_STYLE_CONFIG: PreviewStyleConfig = {
   lineHeight: 'normal',
 };
 
-// Standard AI Studio / Applet Client ID placeholder (can be overwritten via .env or user settings)
-const DEFAULT_CLIENT_ID =
-  ((import.meta as any).env?.VITE_GOOGLE_CLIENT_ID as string) ||
-  '641006858643-4q8md5c0a3e8.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = ((import.meta as any).env?.VITE_GOOGLE_CLIENT_ID as string) || '';
 
 export default function App() {
   // LocalStorage state initializers
@@ -63,10 +60,6 @@ export default function App() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     const savedUser = localStorage.getItem('md_editor_user_profile');
     return savedUser ? JSON.parse(savedUser) : null;
-  });
-
-  const [customClientId, setCustomClientId] = useState<string>(() => {
-    return localStorage.getItem('md_editor_client_id') || DEFAULT_CLIENT_ID;
   });
 
   const [autoSyncEnabled, setAutoSyncEnabled] = useState<boolean>(() => {
@@ -127,11 +120,6 @@ export default function App() {
       localStorage.removeItem('md_editor_user_profile');
     }
   }, [userProfile]);
-
-  // Persist Client ID
-  useEffect(() => {
-    localStorage.setItem('md_editor_client_id', customClientId);
-  }, [customClientId]);
 
   // Persist Auto Sync setting
   useEffect(() => {
@@ -549,6 +537,7 @@ export default function App() {
 
       {/* Google Drive Sync Modal */}
       <GoogleDriveModal
+        clientId={GOOGLE_CLIENT_ID}
         userProfile={userProfile}
         onUpdateUserProfile={setUserProfile}
         files={files}
