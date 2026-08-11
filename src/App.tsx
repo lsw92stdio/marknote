@@ -5,7 +5,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Toolbar } from './components/Toolbar';
 import { Editor, EditorRef } from './components/Editor';
-import { Preview } from './components/Preview';
+import { Preview, PreviewRef } from './components/Preview';
 import { StyleCustomizer } from './components/StyleCustomizer';
 import { ExportModal } from './components/ExportModal';
 import { GoogleDriveModal } from './components/GoogleDriveModal';
@@ -65,6 +65,11 @@ export default function App() {
     return localStorage.getItem('md_editor_auto_sync') === 'true';
   });
 
+  const [scrollSyncEnabled, setScrollSyncEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem('md_editor_scroll_sync');
+    return saved === null ? true : saved === 'true';
+  });
+
   // UI Modals
   const [isStyleCustomizerOpen, setIsStyleCustomizerOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -77,6 +82,8 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState(false);
 
   const editorRef = useRef<EditorRef>(null);
+  const previewRef = useRef<PreviewRef>(null);
+  const isSyncingScrollRef = useRef(false);
 
   const isDark = theme === 'dark';
 
@@ -124,6 +131,30 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('md_editor_auto_sync', String(autoSyncEnabled));
   }, [autoSyncEnabled]);
+
+  // Persist Scroll Sync setting
+  useEffect(() => {
+    localStorage.setItem('md_editor_scroll_sync', String(scrollSyncEnabled));
+  }, [scrollSyncEnabled]);
+
+  // Split-view Scroll Sync Handlers
+  const handleEditorScroll = (ratio: number) => {
+    if (!scrollSyncEnabled || isSyncingScrollRef.current) return;
+    isSyncingScrollRef.current = true;
+    previewRef.current?.scrollToRatio(ratio);
+    requestAnimationFrame(() => {
+      isSyncingScrollRef.current = false;
+    });
+  };
+
+  const handlePreviewScroll = (ratio: number) => {
+    if (!scrollSyncEnabled || isSyncingScrollRef.current) return;
+    isSyncingScrollRef.current = true;
+    editorRef.current?.scrollToRatio(ratio);
+    requestAnimationFrame(() => {
+      isSyncingScrollRef.current = false;
+    });
+  };
 
   // Active File Reference
   const activeFile = files.find((f) => f.id === activeFileId) || files[0];
@@ -219,7 +250,7 @@ export default function App() {
     );
   };
 
-  const handleDeleteFile = (fileId: string) => {
+  const handleDeleteFile = (fileId: string, deleteFromCloud: boolean = true) => {
     const target = files.find((f) => f.id === fileId);
 
     const updatedFiles = files.filter((f) => f.id !== fileId);
@@ -228,7 +259,7 @@ export default function App() {
       setActiveFileId(updatedFiles[0].id);
     }
 
-    if (target?.driveFileId && userProfile?.accessToken) {
+    if (deleteFromCloud && target?.driveFileId && userProfile?.accessToken) {
       deleteDriveFile(userProfile.accessToken, target.driveFileId).catch((err) => {
         console.error('Drive delete error:', err);
       });
@@ -436,6 +467,8 @@ export default function App() {
           isSyncing={isSyncing}
           isDark={isDark}
           accentColor={effectiveAccentColor}
+          scrollSyncEnabled={scrollSyncEnabled}
+          onToggleScrollSync={() => setScrollSyncEnabled((prev) => !prev)}
         />
 
         {/* Editor & Preview Panes Layout */}
@@ -466,6 +499,7 @@ export default function App() {
                   onChange={handleContentChange}
                   isDark={isDark}
                   onCursorChange={(line, col) => setCursorPos({ line, col })}
+                  onScroll={viewMode === 'split' ? handleEditorScroll : undefined}
                 />
               </div>
             )}
@@ -478,9 +512,11 @@ export default function App() {
                 } min-w-0 relative min-h-[200px]`}
               >
                 <Preview
+                  ref={previewRef}
                   content={activeFile?.content || ''}
                   styleConfig={styleConfig}
                   isDark={isDark}
+                  onScroll={viewMode === 'split' ? handlePreviewScroll : undefined}
                 />
 
                 {/* Table of Contents Floating Widget */}

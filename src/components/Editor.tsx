@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState, useImperativeHandle, forwardRef } f
 export interface EditorRef {
   insertText: (prefix: string, suffix?: string, defaultText?: string) => void;
   focus: () => void;
+  scrollToRatio: (ratio: number) => void;
 }
 
 interface EditorProps {
@@ -10,10 +11,11 @@ interface EditorProps {
   onChange: (value: string) => void;
   isDark: boolean;
   onCursorChange?: (line: number, col: number) => void;
+  onScroll?: (ratio: number) => void;
 }
 
 export const Editor = forwardRef<EditorRef, EditorProps>(
-  ({ value, onChange, isDark, onCursorChange }, ref) => {
+  ({ value, onChange, isDark, onCursorChange, onScroll }, ref) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const lineNumbersRef = useRef<HTMLDivElement>(null);
     const [linesCount, setLinesCount] = useState(1);
@@ -47,11 +49,21 @@ export const Editor = forwardRef<EditorRef, EditorProps>(
       focus: () => {
         textareaRef.current?.focus();
       },
+      scrollToRatio: (ratio: number) => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+        textarea.scrollTop = ratio * (textarea.scrollHeight - textarea.clientHeight);
+      },
     }));
 
     const handleScroll = () => {
       if (textareaRef.current && lineNumbersRef.current) {
         lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+      }
+      if (onScroll && textareaRef.current) {
+        const el = textareaRef.current;
+        const maxScroll = el.scrollHeight - el.clientHeight;
+        onScroll(maxScroll > 0 ? el.scrollTop / maxScroll : 0);
       }
     };
 

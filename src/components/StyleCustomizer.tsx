@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Check, Palette, Type, Sparkles, RefreshCw, Info } from 'lucide-react';
+import { X, Palette, Type, Sparkles, RefreshCw } from 'lucide-react';
 import { PreviewStyleConfig } from '../types';
-import { getEffectiveAccentColor, getContrastingTextColor } from '../utils/colorUtils';
+import { getEffectiveAccentColor } from '../utils/colorUtils';
 
 interface StyleCustomizerProps {
   styleConfig: PreviewStyleConfig;
@@ -18,7 +18,7 @@ const BOLD_COLOR_PRESETS = [
   { name: '바이올렛', hex: '#8b5cf6' },
   { name: '핑크', hex: '#ec4899' },
   { name: '앰버 골드', hex: '#f59e0b' },
-  { name: '시안 Sky', hex: '#06b6d4' },
+  { name: '시안', hex: '#06b6d4' },
   { name: '블랙/화이트', hex: '#020617' },
 ];
 
@@ -30,9 +30,6 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
   isDark,
 }) => {
   if (!isOpen) return null;
-
-  const effectiveAccentColor = getEffectiveAccentColor(styleConfig.boldColor, isDark);
-  const effectiveTextColor = getContrastingTextColor(effectiveAccentColor);
 
   const updateField = <K extends keyof PreviewStyleConfig>(
     key: K,
@@ -59,8 +56,12 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs transition-opacity animate-in fade-in">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs transition-opacity animate-in fade-in"
+    >
       <div
+        onClick={(e) => e.stopPropagation()}
         className={`w-full max-w-md h-full flex flex-col shadow-2xl border-l ${
           isDark
             ? 'bg-neutral-950 border-neutral-800 text-neutral-100'
@@ -107,14 +108,6 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
               선택한 테마 색상은 앱 상단 주 버튼과 아이콘 포인트, 문서 강조 요소에 공통으로 동기화됩니다.
             </p>
 
-            {isDark && (
-              <div className="flex items-start gap-1.5 p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] font-medium leading-snug">
-                <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <span>
-                  다크 모드에서는 어두운 포인트 색상(블랙 등) 선택 시 글씨 가독성을 위해 고대비 화이트(#f8fafc)로 자동 보정됩니다.
-                </span>
-              </div>
-            )}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
               {BOLD_COLOR_PRESETS.map((preset) => {
@@ -291,21 +284,13 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-200 dark:border-neutral-800 flex items-center justify-between">
+        <div className="p-4 border-t border-slate-200 dark:border-neutral-800 flex items-center">
           <button
             onClick={handleResetDefaults}
             className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-neutral-200 font-medium"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>기본값 복원</span>
-          </button>
-
-          <button
-            onClick={onClose}
-            className="py-1.5 px-4 rounded-lg font-semibold transition-opacity hover:opacity-90 shadow-xs"
-            style={{ backgroundColor: effectiveAccentColor, color: effectiveTextColor }}
-          >
-            닫기
           </button>
         </div>
       </div>

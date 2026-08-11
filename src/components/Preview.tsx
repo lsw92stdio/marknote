@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
@@ -8,15 +8,37 @@ import { Copy, Check } from 'lucide-react';
 import { PreviewStyleConfig } from '../types';
 import { getEffectiveAccentColor, getTintedBackground } from '../utils/colorUtils';
 
+export interface PreviewRef {
+  scrollToRatio: (ratio: number) => void;
+}
+
 interface PreviewProps {
   content: string;
   styleConfig: PreviewStyleConfig;
   isDark: boolean;
   onHtmlGenerated?: (html: string) => void;
+  onScroll?: (ratio: number) => void;
 }
 
-export const Preview: React.FC<PreviewProps> = ({ content, styleConfig, isDark }) => {
+export const Preview = forwardRef<PreviewRef, PreviewProps>(
+  ({ content, styleConfig, isDark, onScroll }, ref) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    scrollToRatio: (ratio: number) => {
+      const el = containerRef.current;
+      if (!el) return;
+      el.scrollTop = ratio * (el.scrollHeight - el.clientHeight);
+    },
+  }));
+
+  const handleScroll = () => {
+    if (!onScroll || !containerRef.current) return;
+    const el = containerRef.current;
+    const maxScroll = el.scrollHeight - el.clientHeight;
+    onScroll(maxScroll > 0 ? el.scrollTop / maxScroll : 0);
+  };
 
   const handleCopyCode = (codeText: string, id: string) => {
     navigator.clipboard.writeText(codeText);
@@ -65,6 +87,8 @@ export const Preview: React.FC<PreviewProps> = ({ content, styleConfig, isDark }
 
   return (
     <div
+      ref={containerRef}
+      onScroll={handleScroll}
       id="markdown-preview-container"
       style={customCssVariables}
       className={`relative w-full h-full p-6 md:p-8 overflow-y-auto transition-colors duration-200 ${fontFamilyClass} ${fontSizeClass} ${lineHeightClass} ${
@@ -287,4 +311,6 @@ export const Preview: React.FC<PreviewProps> = ({ content, styleConfig, isDark }
       </div>
     </div>
   );
-};
+});
+
+Preview.displayName = 'Preview';

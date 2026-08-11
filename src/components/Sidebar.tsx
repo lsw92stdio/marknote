@@ -34,7 +34,7 @@ interface SidebarProps {
   onSelectFile: (fileId: string) => void;
   onCreateFile: (folderId?: string | null) => void;
   onCreateFolder: (name: string) => string | void;
-  onDeleteFile: (fileId: string) => void;
+  onDeleteFile: (fileId: string, deleteFromCloud?: boolean) => void;
   onMoveFile: (fileId: string, targetFolderId: string | null) => void;
   onRenameFile: (fileId: string, newName: string) => void;
   onDuplicateFile: (fileId: string) => void;
@@ -87,7 +87,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     type: 'file' | 'folder';
     id: string;
     name: string;
+    isSynced: boolean;
   } | null>(null);
+  const [deleteFromCloud, setDeleteFromCloud] = useState(true);
 
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [movingFile, setMovingFile] = useState<MarkdownFile | null>(null);
@@ -126,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
     if (deleteTarget.type === 'file') {
-      onDeleteFile(deleteTarget.id);
+      onDeleteFile(deleteTarget.id, deleteFromCloud);
     } else {
       onDeleteFolder(deleteTarget.id);
     }
@@ -140,13 +142,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setAlertMessage('최소 한 개의 파일은 남겨두어야 합니다.');
       return;
     }
-    setDeleteTarget({ type: 'file', id: file.id, name: getDisplayName(file.name) });
+    setDeleteFromCloud(true);
+    setDeleteTarget({ type: 'file', id: file.id, name: getDisplayName(file.name), isSynced: !!file.driveFileId });
   };
 
   // Request Folder Delete
   const handleRequestDeleteFolder = (folder: FolderType, e: React.MouseEvent) => {
     e.stopPropagation();
-    setDeleteTarget({ type: 'folder', id: folder.id, name: folder.name });
+    setDeleteTarget({ type: 'folder', id: folder.id, name: folder.name, isSynced: false });
   };
 
   // Filtered files
@@ -567,6 +570,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )}
               </div>
             </div>
+
+            {deleteTarget.type === 'file' && deleteTarget.isSynced && (
+              <label className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={deleteFromCloud}
+                  onChange={(e) => setDeleteFromCloud(e.target.checked)}
+                  className="w-4 h-4 rounded cursor-pointer accent-red-600"
+                />
+                <span className="text-xs font-medium text-slate-700 dark:text-neutral-300">
+                  Google Drive에 동기화된 파일도 함께 삭제
+                </span>
+              </label>
+            )}
 
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-neutral-800">
               <button
