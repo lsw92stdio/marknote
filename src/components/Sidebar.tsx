@@ -751,8 +751,8 @@ const FileItem: React.FC<FileItemProps> = ({
       }}
       onClick={onSelect}
       className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
-        isEditing ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
-      } ${
+        isMenuOpen ? 'z-20' : ''
+      } ${isEditing ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} ${
         isActive
           ? 'font-medium shadow-xs'
           : 'hover:bg-slate-200/70 dark:hover:bg-neutral-800/80 text-slate-700 dark:text-neutral-300'
