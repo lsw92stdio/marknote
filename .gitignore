@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+.vite/
+
+# Test output
+coverage/
+
+# Logs
+*.log
+
+# Environment / local overrides
+.env*
+!.env.example
+*.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

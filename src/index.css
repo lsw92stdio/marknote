@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  /* Custom Webkit Scrollbar for light and dark modes */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Light mode scrollbar thumb */
+  ::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+  }
+
+  /* Dark mode scrollbar thumb (pure dark / neutral black) */
+  html.dark ::-webkit-scrollbar-thumb {
+    background-color: #262626;
+    border-radius: 9999px;
+    border: 1px solid #171717;
+  }
+
+  html.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #404040;
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  html.dark * {
+    scrollbar-color: #262626 transparent;
+  }
+}
+
+/* Helper to hide scrollbars when needed */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

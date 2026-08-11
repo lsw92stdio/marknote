@@ -1,0 +1,6 @@
+{
+  "name": "MarkNote",
+  "description": "실시간 미리보기, 내보내기, 구글 드라이브 동기화 및 다크모드를 지원하는 웹 마크다운 에디터",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
